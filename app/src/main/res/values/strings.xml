@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">TrackingAccuracy</string>
+    <string name="app_name_full">Tracking Accuracy</string>
+    <string name="main_button_new">New route</string>
+    <string name="main_button_routes">View routes</string>
+    <string name="main_button_backup">Backup data</string>
+    <string name="starting_dialog_title">Route information</string>
+    <string name="starting_dialog_name_hint">Name</string>
+    <string name="starting_dialog_description_hint">Description</string>
+    <string name="starting_dialog_button_start">Start</string>
+    <string name="button_cancel">Cancel</string>
+</resources>
