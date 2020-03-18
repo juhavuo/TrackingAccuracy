@@ -3,8 +3,10 @@ package fi.metropolia.juhavuo.myapplication
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_start_mapping.*
+import java.util.*
 
 class StartMappingActivity : AppCompatActivity() {
 
@@ -20,7 +22,11 @@ class StartMappingActivity : AppCompatActivity() {
         starting_dialog_start_button.setOnClickListener {
             if(starting_dialog_name_edittext.text.isNotEmpty() && starting_dialog_details_edittext.text.isNotEmpty()){
                 val intent = Intent(this, TrackingMapActivity::class.java)
-                startActivity(intent)
+
+                val startingTime: Long = System.currentTimeMillis()
+                Log.i("testing","${Date(startingTime)}")
+
+                //startActivity(intent)
             }else{
                 var toastText = ""
                 if(starting_dialog_name_edittext.text.isEmpty()){
