@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 @Database(entities = [(Route::class)],version = 1, exportSchema = false)
 abstract class RouteDB: RoomDatabase(){
     abstract fun routeDao(): RouteDao
-    
+
     companion object{
         private var sInstance: RouteDB? = null
         @Synchronized

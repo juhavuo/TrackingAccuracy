@@ -26,6 +26,19 @@ class StartMappingActivity : AppCompatActivity() {
                 val startingTime: Long = System.currentTimeMillis()
                 Log.i("testing","${Date(startingTime)}")
 
+                val database = RouteDB.get(this)
+
+                Thread{
+
+                    Log.i("testing","${database.routeDao().getAmountOfRoutes()}")
+
+                    var id = 0
+                    if(database.routeDao().getAmountOfRoutes()>0){
+                        id = database.routeDao().getBiggestRouteId()+1
+                    }
+                    val route = Route(id,starting_dialog_name_edittext.text.toString(),starting_dialog_details_edittext.text.toString(),startingTime,-1L)
+                    database.routeDao().insert(route)
+                }.start()
                 //startActivity(intent)
             }else{
                 var toastText = ""
