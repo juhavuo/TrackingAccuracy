@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fi.metropolia.juhavuo.myapplication">
+    package="fi.metropolia.juhavuo.trackingaccuracy">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -13,9 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".TrackingMapActivity"></activity>
-        <activity android:name=".StartMappingActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name="fi.metropolia.juhavuo.trackingaccuracy.TrackingMapActivity"></activity>
+        <activity android:name="fi.metropolia.juhavuo.trackingaccuracy.StartMappingActivity" />
+        <activity android:name="fi.metropolia.juhavuo.trackingaccuracy.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />

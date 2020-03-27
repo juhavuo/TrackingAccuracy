@@ -1,4 +1,4 @@
-package fi.metropolia.juhavuo.myapplication
+package fi.metropolia.juhavuo.trackingaccuracy
 
 import androidx.room.Dao
 import androidx.room.Insert

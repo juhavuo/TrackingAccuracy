@@ -1,4 +1,4 @@
-package fi.metropolia.juhavuo.myapplication
+package fi.metropolia.juhavuo.trackingaccuracy
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
