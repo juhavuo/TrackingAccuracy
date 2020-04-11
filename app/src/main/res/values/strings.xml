@@ -9,4 +9,5 @@
     <string name="starting_dialog_description">Description</string>
     <string name="starting_dialog_button_start">Start</string>
     <string name="button_cancel">Cancel</string>
+    <string name="notification_content">Collecting locations to be represented on map</string>
 </resources>

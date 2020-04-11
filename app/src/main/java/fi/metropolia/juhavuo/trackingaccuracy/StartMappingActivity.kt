@@ -28,18 +28,23 @@ class StartMappingActivity : AppCompatActivity() {
 
                 val database = RouteDB.get(this)
 
+                var id = 0
+                val route_name = starting_dialog_name_edittext.text.toString()
+
                 Thread{
 
                     Log.i("testing","${database.routeDao().getAmountOfRoutes()}")
 
-                    var id = 0
                     if(database.routeDao().getAmountOfRoutes()>0){
                         id = database.routeDao().getBiggestRouteId()+1
                     }
-                    val route = Route(id,starting_dialog_name_edittext.text.toString(),starting_dialog_details_edittext.text.toString(),startingTime,-1L)
+                    val route = Route(id,route_name,starting_dialog_details_edittext.text.toString(),startingTime,-1L)
                     database.routeDao().insert(route)
                 }.start()
-                //startActivity(intent)
+
+                intent.putExtra("route_id",id)
+                intent.putExtra("route_name",route_name)
+                startActivity(intent)
             }else{
                 var toastText = ""
                 if(starting_dialog_name_edittext.text.isEmpty()){
