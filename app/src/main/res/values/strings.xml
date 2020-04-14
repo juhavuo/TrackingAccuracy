@@ -9,6 +9,8 @@
     <string name="starting_dialog_description">Description</string>
     <string name="starting_dialog_button_start">Start</string>
     <string name="button_cancel">Cancel</string>
+    <string name="mapping_button_stop">Stop recording locations</string>
     <string name="notification_content">Collecting locations to be represented on map</string>
     <string name="notification_channel_name">LocationTracker</string>
+    <string name="notification_title">Tracking Accuracy location collecting</string>
 </resources>

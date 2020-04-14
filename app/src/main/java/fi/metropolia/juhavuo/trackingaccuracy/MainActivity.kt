@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity(){
     private fun createNotificationChannel(){
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelID = "NotificationChannelForLocationService"
+            val channelID = LocationService.channelId
             val channelName = getString(R.string.notification_channel_name)
             val notificationDescription = getString(R.string.notification_content)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
