@@ -1,9 +1,13 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -22,6 +26,20 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
  */
 class TrackingMapActivity : AppCompatActivity() {
 
+    private lateinit var locationService: LocationService
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            LocationService.isBinded=false
+        }
+
+        override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
+            val binder = service as LocationService.LocationTrackingBinder
+            locationService = binder.getService()
+            LocationService.isBinded=true
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,10 +64,12 @@ class TrackingMapActivity : AppCompatActivity() {
         //if service is not already running, start service
         if(!LocationService.isServiceStarted){
             startService(serviceIntent)
-            Log.i("test","service started")
         }
 
         mapping_stop_button.setOnClickListener {
+
+            //must unbind first
+            unbindLocationService()
             stopService(serviceIntent)
             backToMain()
         }
@@ -61,12 +81,19 @@ class TrackingMapActivity : AppCompatActivity() {
         super.onStart()
 
         //bind service
+        Intent(this, LocationService::class.java).also { intent->
+            bindService(intent,connection, Context.BIND_AUTO_CREATE)
+        }
     }
 
     override fun onStop(){
         super.onStop()
-
+        Log.i("test","Tracking map activity onStop")
         //unbind service
+        if(LocationService.isBinded) {
+            unbindLocationService()
+            Log.i("test","unbind at stop")
+        }
     }
 
     override fun onBackPressed() {
@@ -94,5 +121,9 @@ class TrackingMapActivity : AppCompatActivity() {
         }
     }
 
+    private fun unbindLocationService(){
+        unbindService(connection)
+        LocationService.isBinded = false
+    }
 
 }

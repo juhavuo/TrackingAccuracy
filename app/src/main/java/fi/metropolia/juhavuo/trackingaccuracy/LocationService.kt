@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.location.Location
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -16,12 +17,13 @@ class LocationService: Service(){
         var isServiceStarted = false
         val channelId = "NotificationChannelForLocationService"
         val notificationId = 3001
+        var isBinded = false
     }
 
-    private var isBinded = false
     private val locationList: ArrayList<Location> = ArrayList()
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
+    private val binder = LocationTrackingBinder()
 
     override fun onCreate() {
         super.onCreate()
@@ -59,7 +61,7 @@ class LocationService: Service(){
     }
 
     override fun onBind(p0: Intent?): IBinder? {
-        TODO("Not yet implemented")
+        return binder
     }
 
     override fun onDestroy() {
@@ -78,5 +80,9 @@ class LocationService: Service(){
         return locationList
     }
 
-
+    inner class LocationTrackingBinder: Binder(){
+        fun getService(): LocationService{
+            return this@LocationService
+        }
+    }
 }
