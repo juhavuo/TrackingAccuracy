@@ -2,6 +2,7 @@
     <string name="app_name">TrackingAccuracy</string>
     <string name="app_name_full">Tracking Accuracy</string>
     <string name="main_button_new">New route</string>
+    <string name="main_button_straight_to_mapping">Return to live map</string>
     <string name="main_button_routes">View routes</string>
     <string name="main_button_backup">Backup data</string>
     <string name="starting_dialog_title">Route information</string>

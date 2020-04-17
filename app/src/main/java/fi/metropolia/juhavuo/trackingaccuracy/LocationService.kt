@@ -4,9 +4,11 @@ import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.location.Location
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import com.google.android.gms.location.*
 
 class LocationService: Service(){
 
@@ -15,6 +17,11 @@ class LocationService: Service(){
         val channelId = "NotificationChannelForLocationService"
         val notificationId = 3001
     }
+
+    private var isBinded = false
+    private val locationList: ArrayList<Location> = ArrayList()
+    private lateinit var locationRequest: LocationRequest
+    private lateinit var locationCallback: LocationCallback
 
     override fun onCreate() {
         super.onCreate()
@@ -29,6 +36,19 @@ class LocationService: Service(){
             var notification = notificationBuilder.build()
 
             startForeground(notificationId,notification)
+        }
+
+        locationRequest = LocationRequest()
+        locationRequest.interval = 20 * 1000 //20 seconds
+        locationRequest.fastestInterval = 10 * 1000
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+
+        locationCallback = object: LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                if(locationResult != null){
+                    Log.i("test","altitude: ${locationResult.lastLocation}")
+                }
+            }
         }
     }
 
@@ -46,6 +66,16 @@ class LocationService: Service(){
         super.onDestroy()
         isServiceStarted = false
         Log.i("test","service destroyed")
+
+        //save location list to database
+    }
+
+    /*
+     *Get the already gathered data of locations, so that mapping activity
+     * can draw the route after reopening of that activity.
+     */
+    fun getLocationData(): ArrayList<Location>{
+        return locationList
     }
 
 

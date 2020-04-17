@@ -18,9 +18,18 @@ class MainActivity : AppCompatActivity(){
 
         createNotificationChannel()
 
+        if(LocationService.isServiceStarted){
+            main_new_button.text = getText(R.string.main_button_straight_to_mapping)
+        }
+
         main_new_button.setOnClickListener {
-            val intent = Intent(this,StartMappingActivity::class.java)
-            startActivity(intent)
+            if(!LocationService.isServiceStarted) {
+                val intent = Intent(this, StartMappingActivity::class.java)
+                startActivity(intent)
+            }else{
+                val intent = Intent(this,TrackingMapActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
 

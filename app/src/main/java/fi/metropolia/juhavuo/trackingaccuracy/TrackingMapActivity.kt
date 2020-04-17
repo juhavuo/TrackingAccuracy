@@ -50,9 +50,8 @@ class TrackingMapActivity : AppCompatActivity() {
         }
 
         mapping_stop_button.setOnClickListener {
-            if(LocationService.isServiceStarted){
-                stopService(serviceIntent)
-            }
+            stopService(serviceIntent)
+            backToMain()
         }
 
 
@@ -68,6 +67,16 @@ class TrackingMapActivity : AppCompatActivity() {
         super.onStop()
 
         //unbind service
+    }
+
+    override fun onBackPressed() {
+        backToMain()
+    }
+
+    private fun backToMain(){
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(intent)
     }
 
     private fun checkPermissions(){
