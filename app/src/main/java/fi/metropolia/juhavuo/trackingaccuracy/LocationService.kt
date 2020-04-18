@@ -21,6 +21,7 @@ class LocationService: Service(){
     }
 
     private val locationList: ArrayList<Location> = ArrayList()
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
     private val binder = LocationTrackingBinder()
@@ -38,6 +39,20 @@ class LocationService: Service(){
             var notification = notificationBuilder.build()
 
             startForeground(notificationId,notification)
+        }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        //get initial location
+        try {
+            fusedLocationClient.lastLocation.addOnCompleteListener{ task ->
+                Log.i("test","task succesful: ${task.isSuccessful} result: ${task.result}")
+               if(task.isSuccessful && task.result !=null){
+                   locationList.add(task.result!!)
+               }
+            }
+        }catch (secExp: SecurityException){
+            Log.i("test",secExp.toString())
         }
 
         locationRequest = LocationRequest()

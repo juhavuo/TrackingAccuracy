@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
@@ -27,6 +28,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 class TrackingMapActivity : AppCompatActivity() {
 
     private lateinit var locationService: LocationService
+    private lateinit var locations: ArrayList<Location>
 
     private val connection = object : ServiceConnection {
         override fun onServiceDisconnected(p0: ComponentName?) {
@@ -84,6 +86,12 @@ class TrackingMapActivity : AppCompatActivity() {
         Intent(this, LocationService::class.java).also { intent->
             bindService(intent,connection, Context.BIND_AUTO_CREATE)
         }
+        /*
+        locations = locationService.getLocationData()
+        for (location in locations){
+            Log.i("test","${location.latitude}")
+        }*/
+
     }
 
     override fun onStop(){
