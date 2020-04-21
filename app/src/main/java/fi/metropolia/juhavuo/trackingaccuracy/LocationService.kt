@@ -1,5 +1,6 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
+import android.app.Activity
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
@@ -24,6 +25,7 @@ class LocationService: Service(){
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
+    private var activity: CallbackForService? = null
     private val binder = LocationTrackingBinder()
 
     override fun onCreate() {
@@ -63,7 +65,9 @@ class LocationService: Service(){
         locationCallback = object: LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult?) {
                 if(locationResult != null){
-                    Log.i("test","altitude: ${locationResult.lastLocation}")
+                    if(isBinded && activity!=null){
+                        activity!!.getNewLocations(locationResult.locations as ArrayList<Location>)
+                    }
                 }
             }
         }
@@ -71,6 +75,7 @@ class LocationService: Service(){
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i("test","service started")
+        startLocationUpdates()
         isServiceStarted = true
         return START_NOT_STICKY
     }
@@ -80,7 +85,8 @@ class LocationService: Service(){
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+
+        stopLocationUpdates()
         isServiceStarted = false
         Log.i("test","service destroyed")
 
@@ -95,9 +101,36 @@ class LocationService: Service(){
         return locationList
     }
 
+    fun hasLocations(): Boolean = locationList.isNotEmpty()
+
+    fun registerClient(activity: Activity){
+        this.activity = activity as CallbackForService
+    }
+
+    fun unregisterClient(){
+        this.activity = null
+    }
+
+    private fun startLocationUpdates(){
+        try{
+            fusedLocationClient.requestLocationUpdates(locationRequest,locationCallback,null)
+        }catch (secExp: SecurityException){
+            Log.e("test",secExp.toString())
+        }
+    }
+
+    private fun stopLocationUpdates(){
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
     inner class LocationTrackingBinder: Binder(){
         fun getService(): LocationService{
             return this@LocationService
         }
+    }
+
+    //from answer to https://stackoverflow.com/questions/20594936/communication-between-activity-and-service
+    interface CallbackForService{
+        fun getNewLocations(new_locations: ArrayList<Location>)
     }
 }

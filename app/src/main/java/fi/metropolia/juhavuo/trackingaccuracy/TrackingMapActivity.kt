@@ -25,20 +25,28 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
  *
  * Author: Juha Vuokko
  */
-class TrackingMapActivity : AppCompatActivity() {
+class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForService {
 
     private lateinit var locationService: LocationService
-    private lateinit var locations: ArrayList<Location>
+    private var locations: ArrayList<Location> = ArrayList()
 
     private val connection = object : ServiceConnection {
         override fun onServiceDisconnected(p0: ComponentName?) {
             LocationService.isBinded=false
+            locationService.unregisterClient()
         }
 
         override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
             val binder = service as LocationService.LocationTrackingBinder
             locationService = binder.getService()
+            locationService.registerClient(this@TrackingMapActivity)
             LocationService.isBinded=true
+
+            //old recorded locations for drawing
+            if(locationService.hasLocations()) {
+                locations = locationService.getLocationData()
+                Log.i("test", "Is any information there yet?: ${locations.size}")
+            }
         }
 
     }
@@ -86,13 +94,9 @@ class TrackingMapActivity : AppCompatActivity() {
         Intent(this, LocationService::class.java).also { intent->
             bindService(intent,connection, Context.BIND_AUTO_CREATE)
         }
-        /*
-        locations = locationService.getLocationData()
-        for (location in locations){
-            Log.i("test","${location.latitude}")
-        }*/
 
     }
+
 
     override fun onStop(){
         super.onStop()
@@ -133,5 +137,11 @@ class TrackingMapActivity : AppCompatActivity() {
         unbindService(connection)
         LocationService.isBinded = false
     }
+
+    override fun getNewLocations(new_locations: ArrayList<Location>) {
+        locations.addAll(new_locations)
+        Log.i("test", "got ${new_locations.size} new locations")
+    }
+
 
 }
