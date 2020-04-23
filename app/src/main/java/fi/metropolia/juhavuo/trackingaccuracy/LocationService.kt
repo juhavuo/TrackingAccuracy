@@ -68,7 +68,7 @@ class LocationService: Service(){
             override fun onLocationResult(locationResult: LocationResult?) {
                 if(locationResult != null){
                     if(isBinded && activity!=null){
-                        activity!!.getNewLocations(locationResult.locations as ArrayList<Location>)
+                        activity!!.drawLocation(locationResult.locations[0])
                         locationList.addAll(locationResult.locations)
                     }
                 }
@@ -157,6 +157,6 @@ class LocationService: Service(){
 
     //from answer to https://stackoverflow.com/questions/20594936/communication-between-activity-and-service
     interface CallbackForService{
-        fun getNewLocations(new_locations: ArrayList<Location>)
+        fun drawLocation(location: Location)
     }
 }
