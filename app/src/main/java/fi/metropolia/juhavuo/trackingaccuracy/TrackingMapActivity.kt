@@ -65,8 +65,6 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
         }
         tracking_map.setTileSource(TileSourceFactory.MAPNIK)
 
-       checkPermissions()
-
         val serviceClass = LocationService::class.java
         val serviceIntent = Intent(applicationContext,serviceClass)
         serviceIntent.putExtra("routeid",route_id)
@@ -119,20 +117,7 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
         startActivity(intent)
     }
 
-    private fun checkPermissions(){
-        if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-            PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 0)
-        }
 
-        if(ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),0)
-        }
-    }
 
     private fun unbindLocationService(){
         unbindService(connection)

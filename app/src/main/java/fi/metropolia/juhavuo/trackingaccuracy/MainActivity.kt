@@ -4,10 +4,13 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(){
@@ -17,6 +20,8 @@ class MainActivity : AppCompatActivity(){
         setContentView(R.layout.activity_main)
 
         createNotificationChannel()
+
+        checkPermissions()
 
         if(LocationService.isServiceStarted){
             main_new_button.text = getText(R.string.main_button_straight_to_mapping)
@@ -30,6 +35,23 @@ class MainActivity : AppCompatActivity(){
                 val intent = Intent(this,TrackingMapActivity::class.java)
                 startActivity(intent)
             }
+        }
+
+
+    }
+
+    private fun checkPermissions(){
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+            PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 0)
+        }
+
+        if(ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),0)
         }
     }
 
