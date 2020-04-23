@@ -29,6 +29,7 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
 
     private lateinit var locationService: LocationService
     private var locations: ArrayList<Location> = ArrayList()
+    var route_id: Int = -1
 
     private val connection = object : ServiceConnection {
         override fun onServiceDisconnected(p0: ComponentName?) {
@@ -58,7 +59,7 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
             PreferenceManager.getDefaultSharedPreferences(ctx))
         setContentView(R.layout.activity_tracking_map)
 
-        val route_id = intent.getIntExtra("route_id",-1)
+        route_id = intent.getIntExtra("route_id",-1)
         val route_name = intent.getStringExtra("route_name")
 
         if(!route_name.isNullOrBlank()){
@@ -70,6 +71,7 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
 
         val serviceClass = LocationService::class.java
         val serviceIntent = Intent(applicationContext,serviceClass)
+        serviceIntent.putExtra("routeid",route_id)
 
         //if service is not already running, start service
         if(!LocationService.isServiceStarted){

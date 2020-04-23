@@ -7,10 +7,10 @@ import androidx.room.PrimaryKey
 data class Route(
     @PrimaryKey
     val routeid: Int,
-    val name: String,
-    val description: String,
+    var name: String,
+    var description: String,
     val startingTime: Long,
-    val stoppingTime: Long
+    var stoppingTime: Long
 ){
 
     override fun toString(): String {

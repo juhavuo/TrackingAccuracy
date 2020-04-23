@@ -25,8 +25,10 @@ class LocationService: Service(){
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
+    private var routeid = -1
     private var activity: CallbackForService? = null
     private val binder = LocationTrackingBinder()
+    private lateinit var database: RouteDB
 
     override fun onCreate() {
         super.onCreate()
@@ -67,26 +69,33 @@ class LocationService: Service(){
                 if(locationResult != null){
                     if(isBinded && activity!=null){
                         activity!!.getNewLocations(locationResult.locations as ArrayList<Location>)
+                        locationList.addAll(locationResult.locations)
                     }
                 }
             }
         }
+
+        database = RouteDB.get(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i("test","service started")
+        if(intent!=null){
+            intent!!.getIntExtra("routeid",-1)
+        }
         startLocationUpdates()
         isServiceStarted = true
         return START_NOT_STICKY
     }
 
-    override fun onBind(p0: Intent?): IBinder? {
+    override fun onBind(intent: Intent?): IBinder? {
         return binder
     }
 
     override fun onDestroy() {
 
         stopLocationUpdates()
+        saveLocationDataToDatabase()
         isServiceStarted = false
         Log.i("test","service destroyed")
 
@@ -107,6 +116,8 @@ class LocationService: Service(){
         this.activity = activity as CallbackForService
     }
 
+
+
     fun unregisterClient(){
         this.activity = null
     }
@@ -121,6 +132,21 @@ class LocationService: Service(){
 
     private fun stopLocationUpdates(){
         fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
+    private fun saveLocationDataToDatabase(){
+        Thread{
+            //add proper stopping time
+            if(routeid!=-1) {
+                database.routeDao().updateStoppingtime(routeid, System.currentTimeMillis())
+
+                //add collected locations to the database
+                for ((index, location) in locationList.withIndex()) {
+                    val measuredLocation = MeasuredLocation(index,routeid,location.latitude,location.longitude,location.altitude,location.accuracy)
+                    database.measuredLocationDao().insert(measuredLocation)
+                }
+            }
+        }.start()
     }
 
     inner class LocationTrackingBinder: Binder(){
