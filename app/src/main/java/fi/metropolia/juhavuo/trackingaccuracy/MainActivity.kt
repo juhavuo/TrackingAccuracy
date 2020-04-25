@@ -37,6 +37,11 @@ class MainActivity : AppCompatActivity(){
             }
         }
 
+        main_routes_button.setOnClickListener {
+            val intent = Intent(this,RouteListingActivity::class.java)
+            startActivity(intent)
+        }
+
 
     }
 

@@ -8,6 +8,9 @@ import androidx.room.Update
 @Dao
 interface RouteDao{
 
+    @Query("SELECT * FROM route")
+    fun getRoutes(): List<Route>
+
     //get the id of the newest route
     @Query("SELECT MAX(routeid) FROM route")
     fun getBiggestRouteId(): Int
