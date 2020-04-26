@@ -24,4 +24,7 @@
         <item>name, alphabetic</item>
         <item>name, reversed</item>
     </string-array>
+    <string name="data_viewing_bm_map_item">Map</string>
+    <string name="data_viewing_bm_graph_item">Graphs</string>
+    <string name="data_viewing_bm_numerical_item">Numerical</string>
 </resources>

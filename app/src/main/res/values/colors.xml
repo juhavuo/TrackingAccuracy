@@ -3,6 +3,7 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="colorRvItemBorder">#440044</color>
-    <color name="colorRvItemBg">#ffeeff</color>
+    <color name="colorRvItemBorder">#002244</color>
+    <color name="colorRvItemBg">#e0eeff</color>
+    <color name="colorDataVievingBmBg">#e0fff0</color>
 </resources>

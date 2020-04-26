@@ -45,9 +45,7 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
             locationService = binder.getService()
             locationService.registerClient(this@TrackingMapActivity)
             LocationService.isBinded=true
-
         }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,8 +79,6 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
             stopService(serviceIntent)
             backToMain()
         }
-
-
     }
 
     override fun onStart() {
@@ -92,9 +88,7 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
         Intent(this, LocationService::class.java).also { intent->
             bindService(intent,connection, Context.BIND_AUTO_CREATE)
         }
-
     }
-
 
     override fun onStop(){
         super.onStop()
@@ -129,15 +123,12 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
             mapDrawn = true
             tracking_map.controller.setZoom(14.0)
             tracking_map.controller.setCenter(GeoPoint(location.latitude,location.longitude))
-
         }
+
         val marker = Marker(tracking_map)
         marker.position = GeoPoint(location.latitude,location.longitude)
         marker.icon = resources.getDrawable(R.drawable.ic_my_location_black_24dp)
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         tracking_map.overlays.add(marker)
-
     }
-
-
 }
