@@ -1,11 +1,14 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
 import android.content.Context
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.route_listing_recycleview_row.view.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 class RouteListingAdapter(val items: ArrayList<Route>, val context: Context):
     RecyclerView.Adapter<RouteListingAdapter.RoutesHolder>(){
@@ -34,6 +37,36 @@ class RouteListingAdapter(val items: ArrayList<Route>, val context: Context):
     override fun onBindViewHolder(holder: RoutesHolder, position: Int) {
         holder.title_tv.text = items[position].name
         holder.description_tv.text = items[position].description
-        holder.startingTime_tv.text = items[position].startingTime.toString()
+        //https://stackoverflow.com/questions/47250263/kotlin-convert-timestamp-to-datetime Anga Koko
+        val calendar = Calendar.getInstance(Locale.getDefault())
+        calendar.timeInMillis = items[position].startingTime
+        holder.startingTime_tv.text = DateFormat.format("hh:mm dd.MM.yyyy", calendar).toString()
+    }
+
+    //https://grokonez.com/kotlin/kotlin-array-sort-sortby-sortwith
+    fun organizeByStartingTime(newestFirst: Boolean){
+        items.sortWith(Comparator<Route> { p0, p1 ->
+            when {
+                p0.startingTime > p1.startingTime -> 1
+                p0.startingTime == p1.startingTime -> 0
+                else -> -1
+            }
+        })
+        if(newestFirst)
+            items.reverse()
+        notifyDataSetChanged()
+    }
+
+    fun organizeByName(reverseAlphabetic: Boolean){
+        items.sortWith(kotlin.Comparator<Route>{ p0,p1->
+            when{
+                p0.name.toLowerCase(Locale.ROOT) > p1.name.toLowerCase(Locale.ROOT) -> 1
+                p0.name.toLowerCase(Locale.ROOT) == p1.name.toLowerCase(Locale.ROOT) -> 0
+                else -> -1
+            }
+        })
+        if(!reverseAlphabetic)
+            items.reverse()
+        notifyDataSetChanged()
     }
 }
