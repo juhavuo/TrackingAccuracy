@@ -1,6 +1,7 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
 import android.content.Context
+import android.content.Intent
 import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +19,15 @@ class RouteListingAdapter(val items: ArrayList<Route>, val context: Context):
         val description_tv = v.route_listing_rv_row_description_tv
         val startingTime_tv = v.route_listing_rv_row_time_tv
         val view_button = v.route_listing_rv_row_view_button
-        val delete_button = v.route_listing_rv_row_delete_button
+
+        init {
+            view_button.setOnClickListener {
+                val intent = Intent(context,DataViewingActivity::class.java)
+                intent.putExtra("routeid",items[adapterPosition].routeid)
+                intent.putExtra("routename",items[adapterPosition].name)
+                context.startActivity(intent)
+            }
+        }
     }
 
     override fun onCreateViewHolder(

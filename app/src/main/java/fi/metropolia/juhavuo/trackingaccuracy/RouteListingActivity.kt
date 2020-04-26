@@ -18,6 +18,7 @@ class RouteListingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_route_listing)
 
+        route_listing_recyclerview.addItemDecoration(RecyclerviewMarginDecoration(20))
         getRoutes()
 
         val adapterForSpinner = ArrayAdapter.createFromResource(
