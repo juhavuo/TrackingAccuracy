@@ -73,7 +73,7 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
         }
 
         mapping_stop_button.setOnClickListener {
-
+            locationService.saveLocationDataToDatabase()
             //must unbind first
             unbindLocationService()
             stopService(serviceIntent)

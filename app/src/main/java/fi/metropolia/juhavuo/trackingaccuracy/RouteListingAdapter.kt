@@ -3,6 +3,7 @@ package fi.metropolia.juhavuo.trackingaccuracy
 import android.content.Context
 import android.content.Intent
 import android.text.format.DateFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,7 @@ class RouteListingAdapter(val items: ArrayList<Route>, val context: Context):
             view_button.setOnClickListener {
                 val intent = Intent(context,DataViewingActivity::class.java)
                 intent.putExtra("routeid",items[adapterPosition].routeid)
+                Log.i("test","${items[adapterPosition].routeid}")
                 intent.putExtra("routename",items[adapterPosition].name)
                 context.startActivity(intent)
             }

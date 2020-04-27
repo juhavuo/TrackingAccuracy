@@ -81,7 +81,7 @@ class LocationService: Service(){
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i("test","service started")
         if(intent!=null){
-            intent!!.getIntExtra("routeid",-1)
+            routeid=intent!!.getIntExtra("routeid",-1)
         }
         startLocationUpdates()
         isServiceStarted = true
@@ -95,7 +95,6 @@ class LocationService: Service(){
     override fun onDestroy() {
 
         stopLocationUpdates()
-        saveLocationDataToDatabase()
         isServiceStarted = false
         Log.i("test","service destroyed")
 
@@ -134,16 +133,21 @@ class LocationService: Service(){
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
-    private fun saveLocationDataToDatabase(){
+    fun saveLocationDataToDatabase(){
+        Log.i("test","save the database")
+        Log.i("test","location list size ${locationList.size}")
+        Log.i("test","route id: $routeid")
         Thread{
             //add proper stopping time
             if(routeid!=-1) {
                 database.routeDao().updateStoppingtime(routeid, System.currentTimeMillis())
 
                 //add collected locations to the database
+
                 for ((index, location) in locationList.withIndex()) {
                     val measuredLocation = MeasuredLocation(index,routeid,location.latitude,location.longitude,location.altitude,location.accuracy)
                     database.measuredLocationDao().insert(measuredLocation)
+                    Log.i("test","location inserted")
                 }
             }
         }.start()
