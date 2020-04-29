@@ -1,10 +1,12 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.fragment_map.*
@@ -16,6 +18,14 @@ class MapFragment: Fragment(){
 
     private lateinit var map: MapView
     private var dataAnalyzer: DataAnalyzer? = null
+    private var delegate: ShowMenuFragmentDelegate? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if(context is ShowMenuFragmentDelegate){
+            delegate = context
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +43,10 @@ class MapFragment: Fragment(){
         val view = inflater.inflate(R.layout.fragment_map,container,false)
         map = view.findViewById<MapView>(R.id.map_fragment_map)
         map.setTileSource(TileSourceFactory.MAPNIK)
+        val menubutton = view.findViewById<ImageButton>(R.id.map_fragment_menu_button)
+        menubutton.setOnClickListener {
+            delegate?.showMenuFragment(this)
+        }
         return view
     }
 
@@ -48,8 +62,8 @@ class MapFragment: Fragment(){
         }
     }
 
+}
 
-
-
-
+interface ShowMenuFragmentDelegate{
+    fun showMenuFragment(fragment: MapFragment)
 }
