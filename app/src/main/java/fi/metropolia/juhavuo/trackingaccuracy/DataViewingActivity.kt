@@ -23,6 +23,8 @@ class DataViewingActivity : AppCompatActivity(), ShowMenuFragmentDelegate, Close
 
         mapFragment = MapFragment()
         menuFragment = MenuFragment()
+        val graphFragment = GraphFragment()
+        val numericalFragment = NumericalFragment()
 
         supportFragmentManager.beginTransaction()
             .add(R.id.fragment_container,mapFragment)
@@ -30,7 +32,31 @@ class DataViewingActivity : AppCompatActivity(), ShowMenuFragmentDelegate, Close
 
         mapFragment.getDataAnalyzer(dataAnalyzer)
 
-        //getLocationsOfRouteWithId(routeid)
+        data_viewing_bottom_bar.setOnNavigationItemSelectedListener {menuItem ->
+            when(menuItem.itemId){
+                R.id.data_viewing_bm_graphs_item ->{
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container,graphFragment)
+                        .commit()
+                    true
+                }
+                R.id.data_viewing_bm_numerical ->{
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container,numericalFragment)
+                        .commit()
+                    true
+                }
+                R.id.data_viewing_bm_map ->{
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container,mapFragment)
+                        .commit()
+                    true
+                }else ->
+                false
+            }
+
+
+        }
 
 
     }

@@ -12,6 +12,7 @@ import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 
 class MapFragment: Fragment(){
@@ -58,7 +59,10 @@ class MapFragment: Fragment(){
         super.onStart()
         if(dataAnalyzer!=null){
             val locations = dataAnalyzer!!.getOriginalLocations()
-            Log.i("test","data analyzer not null, locations: ${locations.size}")
+            if(locations.isNotEmpty()){
+                map.controller.setZoom(14.0)
+                map.controller.setCenter(GeoPoint(locations[0].latitude,locations[0].longitude))
+            }
         }
     }
 
