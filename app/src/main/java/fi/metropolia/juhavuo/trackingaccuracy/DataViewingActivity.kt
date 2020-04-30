@@ -20,6 +20,7 @@ class DataViewingActivity : AppCompatActivity(), ShowMenuFragmentDelegate, Close
         val routeName = intent.getStringExtra("routename")
 
         dataAnalyzer = DataAnalyzer(routeid,this.applicationContext)
+        dataAnalyzer.getMeasuredLocationsFromDatabase()
 
         mapFragment = MapFragment()
         menuFragment = MenuFragment()

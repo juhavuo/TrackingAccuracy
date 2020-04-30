@@ -95,10 +95,11 @@ class LocationService: Service(){
     override fun onDestroy() {
 
         stopLocationUpdates()
+        saveLocationDataToDatabase()
+
         isServiceStarted = false
         Log.i("test","service destroyed")
 
-        //save location list to database
     }
 
     /*

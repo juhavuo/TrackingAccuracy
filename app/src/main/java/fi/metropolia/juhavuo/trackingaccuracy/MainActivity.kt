@@ -21,7 +21,8 @@ class MainActivity : AppCompatActivity(){
 
         createNotificationChannel()
 
-        checkPermissions()
+        checkLocationPermission()
+        checkExternalStoragePermisson()
 
         if(LocationService.isServiceStarted){
             main_new_button.text = getText(R.string.main_button_straight_to_mapping)
@@ -45,13 +46,21 @@ class MainActivity : AppCompatActivity(){
 
     }
 
-    private fun checkPermissions(){
-        if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-            PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 0)
+    private fun checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 0
+            )
         }
+    }
+
+    private fun checkExternalStoragePermisson(){
 
         if(ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
