@@ -14,6 +14,12 @@ interface MeasuredLocationDao{
     @Query("SELECT * FROM measuredlocation WHERE routeID =:routeId")
     fun getLocationsOfRouteWithId(routeId: Int): List<MeasuredLocation>
 
+    @Query("SELECT MAX(locationID) FROM measuredlocation")
+    fun getLargestLocationId(): Int
+
+    @Query("SELECT COUNT(*) FROM measuredLocation")
+    fun getAmountOfLocations(): Int
+
     //if deleting route leads to deleting locations related to route
     //this might be useless
     /*

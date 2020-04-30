@@ -95,7 +95,6 @@ class LocationService: Service(){
     override fun onDestroy() {
 
         stopLocationUpdates()
-        saveLocationDataToDatabase()
 
         isServiceStarted = false
         Log.i("test","service destroyed")
@@ -144,9 +143,13 @@ class LocationService: Service(){
                 database.routeDao().updateStoppingtime(routeid, System.currentTimeMillis())
 
                 //add collected locations to the database
+                var indexbase = 0
+                if(database.measuredLocationDao().getAmountOfLocations()>0) {
+                    indexbase = database.measuredLocationDao().getLargestLocationId() + 1
+                }
 
                 for ((index, location) in locationList.withIndex()) {
-                    val measuredLocation = MeasuredLocation(index,routeid,location.latitude,location.longitude,location.altitude,location.accuracy)
+                    val measuredLocation = MeasuredLocation(indexbase+index,routeid,location.latitude,location.longitude,location.altitude,location.accuracy)
                     database.measuredLocationDao().insert(measuredLocation)
                     Log.i("test","location inserted")
                 }

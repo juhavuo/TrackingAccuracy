@@ -70,10 +70,9 @@ class MapFragment: Fragment(){
                 map.controller.setZoom(14.0)
                 map.controller.setCenter(geoPoints[0])
             }
-            /*
             if(geoPoints.size>1){
                 drawMeasuredLocations(true,geoPoints)
-            }*/
+            }
             map.invalidate()
         }
 

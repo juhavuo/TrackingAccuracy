@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.route_listing_recycleview_row.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-class RouteListingAdapter(val items: ArrayList<Route>, val context: Context):
+class RouteListingAdapter(var items: ArrayList<Route>, val context: Context):
     RecyclerView.Adapter<RouteListingAdapter.RoutesHolder>(){
 
     inner class RoutesHolder(v: View): RecyclerView.ViewHolder(v){
@@ -20,6 +20,7 @@ class RouteListingAdapter(val items: ArrayList<Route>, val context: Context):
         val description_tv = v.route_listing_rv_row_description_tv
         val startingTime_tv = v.route_listing_rv_row_time_tv
         val view_button = v.route_listing_rv_row_view_button
+        val delete_button = v.route_listing_rv_row_delete_button
 
         init {
             view_button.setOnClickListener {
@@ -28,6 +29,13 @@ class RouteListingAdapter(val items: ArrayList<Route>, val context: Context):
                 Log.i("test","${items[adapterPosition].routeid}")
                 intent.putExtra("routename",items[adapterPosition].name)
                 context.startActivity(intent)
+            }
+            delete_button.setOnClickListener {
+                val database = RouteDB.get(context)
+                val routeId = items[adapterPosition].routeid
+                Thread{
+                    database.routeDao().deleteRouteWithId(routeId)
+                }.start()
             }
         }
     }
@@ -53,6 +61,12 @@ class RouteListingAdapter(val items: ArrayList<Route>, val context: Context):
         calendar.timeInMillis = items[position].startingTime
         holder.startingTime_tv.text = DateFormat.format("hh:mm dd.MM.yyyy", calendar).toString()
     }
+
+    fun updateItemsList(routes: ArrayList<Route>){
+        items = routes
+        notifyDataSetChanged()
+    }
+
 
     //https://grokonez.com/kotlin/kotlin-array-sort-sortby-sortwith
     fun organizeByStartingTime(newestFirst: Boolean){

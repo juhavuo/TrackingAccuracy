@@ -11,12 +11,17 @@ import kotlinx.android.synthetic.main.activity_route_listing.*
 
 class RouteListingActivity : AppCompatActivity() {
 
-    private lateinit var routelist: ArrayList<Route>
+    private var routelist: ArrayList<Route> = ArrayList()
     private var routeListingAdapter: RouteListingAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_route_listing)
+
+        val linearLayoutManager = LinearLayoutManager(this)
+        routeListingAdapter = RouteListingAdapter(routelist,this)
+        route_listing_recyclerview.layoutManager = linearLayoutManager
+        route_listing_recyclerview.adapter = routeListingAdapter
 
         route_listing_recyclerview.addItemDecoration(RecyclerviewMarginDecoration(20))
         getRoutes()
@@ -48,10 +53,7 @@ class RouteListingActivity : AppCompatActivity() {
             routelist = database.routeDao().getRoutes() as ArrayList<Route>
             routelist.reverse()
             this@RouteListingActivity.runOnUiThread {
-                val linearLayoutManager = LinearLayoutManager(this)
-                routeListingAdapter = RouteListingAdapter(routelist,this)
-                route_listing_recyclerview.layoutManager = linearLayoutManager
-                route_listing_recyclerview.adapter = routeListingAdapter
+               routeListingAdapter?.updateItemsList(routelist)
             }
         }.start()
     }
