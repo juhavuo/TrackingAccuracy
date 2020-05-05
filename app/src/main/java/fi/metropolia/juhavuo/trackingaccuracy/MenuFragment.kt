@@ -34,9 +34,15 @@ class MenuFragment: Fragment(){
         val accuraciesCheckBox = view.findViewById<CheckBox>(R.id.menu_fragment_accuracies_checkBox)
         accuraciesCheckBox.isChecked = mapPreferencesHandler.getAccuracyPreference()
         accuraciesCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            Log.i("test","accuracy $isChecked")
             mapPreferencesHandler.storeAccuracyPreference(isChecked)
         }
+
+        val showLinesCheckBox = view.findViewById<CheckBox>(R.id.menu_fragment_show_lines_checkbox)
+        showLinesCheckBox.isChecked = mapPreferencesHandler.getShowLinesPreference()
+        showLinesCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            mapPreferencesHandler.storeShowLinesPreference(isChecked)
+        }
+
         val closeButton = view.findViewById<ImageButton>(R.id.menu_fragment_close_button)
         closeButton.setOnClickListener {
             delegate?.closeMenuFragment()

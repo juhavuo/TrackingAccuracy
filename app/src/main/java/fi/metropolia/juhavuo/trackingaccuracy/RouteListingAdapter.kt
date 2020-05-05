@@ -82,7 +82,7 @@ class RouteListingAdapter(var items: ArrayList<Route>, val context: Context):
         notifyDataSetChanged()
     }
 
-    fun organizeByName(reverseAlphabetic: Boolean){
+    fun organizeByName(alphabetic: Boolean){
         items.sortWith(kotlin.Comparator<Route>{ p0,p1->
             when{
                 p0.name.toLowerCase(Locale.ROOT) > p1.name.toLowerCase(Locale.ROOT) -> 1
@@ -90,7 +90,7 @@ class RouteListingAdapter(var items: ArrayList<Route>, val context: Context):
                 else -> -1
             }
         })
-        if(!reverseAlphabetic)
+        if(!alphabetic)
             items.reverse()
         notifyDataSetChanged()
     }

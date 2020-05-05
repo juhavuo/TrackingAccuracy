@@ -30,6 +30,7 @@
     <string name="data_viewing_bm_numerical_item">Numerical</string>
     <string name="menu_fragment_title">Viewing options for map</string>
     <string name="menu_fragment_checkbox_accuracies">Show accuracies:</string>
+    <string name="menu_fragment_show_as_line">Show locations connected with lines:</string>
     <string name="menu_fragment_algorithm_title">Show calculated locations using:</string>
     <string name="menu_fragment_algorithm_1">Algorithm 1</string>
     <string name="menu_fragment_algorithm_2">Algorithm 2</string>

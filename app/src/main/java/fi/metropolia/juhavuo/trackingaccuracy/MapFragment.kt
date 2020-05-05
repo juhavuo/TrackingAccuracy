@@ -14,14 +14,16 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 
 class MapFragment: Fragment(){
 
-    private lateinit var map: MapView
+    private var map: MapView? = null
     private var dataAnalyzer: DataAnalyzer? = null
     private var delegate: ShowMenuFragmentDelegate? = null
     private lateinit var mapPreferencesHandler: MapPreferencesHandler
+    private var measuredPolyline = Polyline()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -48,7 +50,7 @@ class MapFragment: Fragment(){
     ): View? {
         val view = inflater.inflate(R.layout.fragment_map,container,false)
         map = view.findViewById<MapView>(R.id.map_fragment_map)
-        map.setTileSource(TileSourceFactory.MAPNIK)
+        map?.setTileSource(TileSourceFactory.MAPNIK)
         val menubutton = view.findViewById<ImageButton>(R.id.map_fragment_menu_button)
         menubutton.setOnClickListener {
             delegate?.showMenuFragment(this)
@@ -67,23 +69,43 @@ class MapFragment: Fragment(){
         if(dataAnalyzer!=null){
             val geoPoints = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
             if(geoPoints.isNotEmpty()){
-                map.controller.setZoom(14.0)
-                map.controller.setCenter(geoPoints[0])
+                map?.controller?.setZoom(14.0)
+                map?.controller?.setCenter(geoPoints[0])
+
+                if(geoPoints.size<2){
+                    drawLocations(true,geoPoints)
+                }else{
+                    if(mapPreferencesHandler.getShowLinesPreference()) {
+                        drawLocations(true, geoPoints)
+                    }else{
+                        drawLocations(false,geoPoints)
+                    }
+                }
             }
-            if(geoPoints.size>1){
-                drawMeasuredLocations(true,geoPoints)
-            }
-            map.invalidate()
+
+            map?.invalidate()
         }
 
     }
 
-    private fun drawMeasuredLocations(drawAsLine:Boolean, measuredGeoPoints: ArrayList<GeoPoint>){
+    private fun drawLocations(drawAsLine:Boolean, gpoints: ArrayList<GeoPoint>){
+        if(map==null){
+            Log.i("test", "map null")
+        }
         if(drawAsLine){
-            val measuredLine = Polyline()
-            measuredLine.setPoints(measuredGeoPoints)
-            map.overlayManager.add(measuredLine)
-            map.invalidate()
+            measuredPolyline.setPoints(gpoints)
+            map?.overlayManager?.add(measuredPolyline)
+            map?.invalidate()
+        }else{
+            for(gp in gpoints){
+                map?.overlayManager?.remove(measuredPolyline)
+                val marker = Marker(map)
+                marker.position = gp
+                marker.icon = resources.getDrawable(R.drawable.map_marker,null)
+                marker.setAnchor(0.5f,0.5f)
+                map?.overlays?.add(marker)
+                map?.invalidate()
+            }
         }
     }
 

@@ -147,9 +147,12 @@ class LocationService: Service(){
                 if(database.measuredLocationDao().getAmountOfLocations()>0) {
                     indexbase = database.measuredLocationDao().getLargestLocationId() + 1
                 }
+                Log.i("index","start indexbase $indexbase")
+                Log.i("index","$routeid")
 
                 for ((index, location) in locationList.withIndex()) {
                     val measuredLocation = MeasuredLocation(indexbase+index,routeid,location.latitude,location.longitude,location.altitude,location.accuracy)
+                    Log.i("index","index raising  ${indexbase+index}")
                     database.measuredLocationDao().insert(measuredLocation)
                     Log.i("test","location inserted")
                 }
