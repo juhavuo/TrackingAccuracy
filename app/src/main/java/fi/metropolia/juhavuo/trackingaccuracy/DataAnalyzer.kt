@@ -30,4 +30,17 @@ class DataAnalyzer(val id: Int, val context: Context){
         return geoPoints
     }
 
+    fun getAccuracies(): ArrayList<Float>{
+        val accuracies: ArrayList<Float> = ArrayList()
+        for(location in measuredLocations){
+            if(location.accuracy == null){
+                accuracies.add(0.0f)
+            }else{
+                accuracies.add(location.accuracy)
+            }
+        }
+
+        return accuracies
+    }
+
 }
