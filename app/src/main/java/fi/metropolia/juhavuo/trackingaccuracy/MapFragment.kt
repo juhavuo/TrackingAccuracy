@@ -21,7 +21,11 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-class MapFragment: Fragment(){
+/**
+ * This class is for representation of readily gathered location data in map fragment.
+ * The measured values together with accuracies can be shown as well as
+ */
+class MapFragment : Fragment() {
 
     private var map: MapView? = null
     private var dataAnalyzer: DataAnalyzer? = null
@@ -36,7 +40,7 @@ class MapFragment: Fragment(){
 
         mapPreferencesHandler = MapPreferencesHandler(context)
 
-        if(context is ShowMenuFragmentDelegate){
+        if (context is ShowMenuFragmentDelegate) {
             delegate = context
         }
     }
@@ -45,8 +49,10 @@ class MapFragment: Fragment(){
         super.onCreate(savedInstanceState)
 
         val ctx = context
-        Configuration.getInstance().load(ctx,
-            PreferenceManager.getDefaultSharedPreferences(ctx))
+        Configuration.getInstance().load(
+            ctx,
+            PreferenceManager.getDefaultSharedPreferences(ctx)
+        )
     }
 
     override fun onCreateView(
@@ -54,7 +60,7 @@ class MapFragment: Fragment(){
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_map,container,false)
+        val view = inflater.inflate(R.layout.fragment_map, container, false)
         val title = view.findViewById<TextView>(R.id.map_fragment_title)
         map = view.findViewById<MapView>(R.id.map_fragment_map)
         map?.setTileSource(TileSourceFactory.MAPNIK)
@@ -65,7 +71,7 @@ class MapFragment: Fragment(){
         return view
     }
 
-    fun getDataAnalyzer(da: DataAnalyzer){
+    fun getDataAnalyzer(da: DataAnalyzer) {
         dataAnalyzer = da
     }
 
@@ -75,26 +81,23 @@ class MapFragment: Fragment(){
         measuredPolyline = Polyline()
 
         val showAccuracies = mapPreferencesHandler.getAccuracyPreference()
-        Log.i("test","map fragment on start, accuracies show: $showAccuracies")
-        if(dataAnalyzer!=null){
+        Log.i("test", "map fragment on start, accuracies show: $showAccuracies")
+        if (dataAnalyzer != null) {
             val geoPoints = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
-            if(geoPoints.isNotEmpty()){
+            if (geoPoints.isNotEmpty()) {
                 map?.controller?.setZoom(14.0)
                 map?.controller?.setCenter(geoPoints[0])
 
-                if(geoPoints.size>1){
-                    if(mapPreferencesHandler.getShowLinesPreference()) {
-                        drawLocations(true, geoPoints)
-                    }else{
-                        drawLocations(false,geoPoints)
-                    }
-                }else{
-                    drawLocations(true,geoPoints)
+                if (mapPreferencesHandler.getAccuracyPreference()) {
+                    constructPolygons(geoPoints, dataAnalyzer!!.getAccuracies())
                 }
 
-                if(mapPreferencesHandler.getAccuracyPreference()){
-                    constructPolygons(geoPoints,dataAnalyzer!!.getAccuracies())
+                if (mapPreferencesHandler.getShowLinesPreference()) {
+                    drawLocations(true, geoPoints)
+                } else {
+                    drawLocations(false, geoPoints)
                 }
+
             }
 
             map?.invalidate()
@@ -102,36 +105,54 @@ class MapFragment: Fragment(){
 
     }
 
-    private fun drawLocations(drawAsLine:Boolean, gpoints: ArrayList<GeoPoint>){
-        if(map==null){
+    private fun drawLocations(drawAsLine: Boolean, gpoints: ArrayList<GeoPoint>) {
+        if (map == null) {
             Log.i("test", "map null")
         }
-        if(drawAsLine && gpoints != null){
+        if (drawAsLine) {
             measuredPolyline?.setPoints(gpoints)
             map?.overlayManager?.add(measuredPolyline)
             map?.invalidate()
-        }else{
-            for(gp in gpoints){
+        } else {
+            for (gp in gpoints) {
                 //map?.overlayManager?.remove(measuredPolyline)
                 val marker = Marker(map)
                 marker.position = gp
-                marker.icon = resources.getDrawable(R.drawable.map_marker,null)
-                marker.setAnchor(0.5f,0.5f)
+                marker.icon = resources.getDrawable(R.drawable.map_marker, null)
                 map?.overlays?.add(marker)
-                map?.invalidate()
             }
+            map?.invalidate()
         }
     }
 
-    private fun constructPolygons(gpoints: ArrayList<GeoPoint>, accuracies: ArrayList<Float>){
-        for((index, gp) in gpoints.withIndex()){
+    private fun constructPolygons(gpoints: ArrayList<GeoPoint>, accuracies: ArrayList<Float>) {
+        for ((index, gp) in gpoints.withIndex()) {
             val polygon = Polygon()
+            val dividedInto = 36
 
-            for(t in 0..36){
-                polygon.addPoint(calculatePointInCircle(gp.latitude,gp.longitude,accuracies[index],t,36))
+            for (t in 0..dividedInto) {
+                polygon.addPoint(
+                    calculatePointInCircle(
+                        gp.latitude,
+                        gp.longitude,
+                        accuracies[index],
+                        t,
+                        dividedInto
+                    )
+                )
 
             }
-            polygon.addPoint(GeoPoint(calculatePointInCircle(gp.latitude,gp.longitude,accuracies[index],0,36)))
+            polygon.addPoint(
+                GeoPoint(
+                    calculatePointInCircle(
+                        gp.latitude,
+                        gp.longitude,
+                        accuracies[index],
+                        0,
+                        dividedInto
+                    )
+                )
+            )
             polygons.add(polygon)
             map?.overlayManager?.add(polygon)
             map?.invalidate()
@@ -139,18 +160,33 @@ class MapFragment: Fragment(){
     }
 
 
-    private fun calculatePointInCircle(lat: Double, lgn: Double, r: Float, t: Int, part: Int): GeoPoint{
+    private fun calculatePointInCircle(
+        lat: Double,
+        lgn: Double,
+        r: Float,
+        t: Int,
+        part: Int
+    ): GeoPoint {
 
         val earthRad = 6378137.0
-        val radiansToDegrees = 180.0/ PI
-        val rlat = r/earthRad*radiansToDegrees
-        val rlng = r/(earthRad* cos(PI*lat/180.0))*radiansToDegrees
-        return GeoPoint(lat+ rlat* cos(2*PI*t/part),lgn+rlng* sin(2*PI*t/part))
+        val radiansToDegrees = 180.0 / PI
+        val rlat = r / earthRad * radiansToDegrees
+        val rlng = r / (earthRad * cos(PI * lat / 180.0)) * radiansToDegrees
+        return GeoPoint(lat + rlat * cos(2 * PI * t / part), lgn + rlng * sin(2 * PI * t / part))
+    }
+
+    private fun drawdrawCorrectedPaths(){
+        val amoutOfPreferences = mapPreferencesHandler.getAmoutOfAlgorithmPreferences()
+        for(i in 0..amoutOfPreferences){
+            if(mapPreferencesHandler.getAlgorithmPreference(i)){
+                when (0)
+            }
+        }
     }
 
 
 }
 
-interface ShowMenuFragmentDelegate{
+interface ShowMenuFragmentDelegate {
     fun showMenuFragment(fragment: MapFragment)
 }

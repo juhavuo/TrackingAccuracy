@@ -43,6 +43,17 @@ class MenuFragment: Fragment(){
             mapPreferencesHandler.storeShowLinesPreference(isChecked)
         }
 
+        val algorithmChecBoxes: ArrayList<CheckBox> = ArrayList()
+        algorithmChecBoxes.add(view.findViewById(R.id.menu_fragment_algorithm_1_checkbox))
+        algorithmChecBoxes.add(view.findViewById(R.id.menu_fragment_algorithm_2_checkbox))
+        algorithmChecBoxes.add(view.findViewById(R.id.menu_fragment_algorithm_3_checkbox))
+        for((index, aCheckBox) in algorithmChecBoxes.withIndex()){
+            aCheckBox.isChecked = mapPreferencesHandler.getAlgorithmPreference(index)
+            aCheckBox.setOnCheckedChangeListener{_, isCheked ->
+                mapPreferencesHandler.storeAlgorithmPreference(index,isCheked)
+            }
+        }
+
         val closeButton = view.findViewById<ImageButton>(R.id.menu_fragment_close_button)
         closeButton.setOnClickListener {
             delegate?.closeMenuFragment()

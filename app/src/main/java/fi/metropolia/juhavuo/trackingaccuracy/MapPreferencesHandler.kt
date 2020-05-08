@@ -9,6 +9,7 @@ class MapPreferencesHandler(context: Context){
 
     private val accuraciesPrference = "accuracy"
     private val showLinesPreference = "showlines"
+    private val algorithmPreferences = arrayOf("algorithm1,algorithm2,algorithm3")
 
     fun storeAccuracyPreference(showAccuracies: Boolean){
         editor.putBoolean(accuraciesPrference,showAccuracies)
@@ -20,8 +21,28 @@ class MapPreferencesHandler(context: Context){
         editor.apply()
     }
 
+    fun storeAlgorithmPreference(index: Int, value: Boolean){
+        if(checkArrayIndex(index)){
+            editor.putBoolean(algorithmPreferences[index],value)
+            editor.apply()
+        }
+    }
+
     fun getAccuracyPreference(): Boolean = sharedPreferences.getBoolean(accuraciesPrference,true)
 
     fun getShowLinesPreference(): Boolean = sharedPreferences.getBoolean(showLinesPreference,true)
+
+    fun getAmoutOfAlgorithmPreferences(): Int = algorithmPreferences.size
+
+    fun getAlgorithmPreference(index: Int): Boolean{
+        if(checkArrayIndex(index)){
+            return sharedPreferences.getBoolean(algorithmPreferences[index],false)
+        }else{
+            return false
+        }
+    }
+
+    private fun checkArrayIndex(index: Int): Boolean = (index >= 0 || index < algorithmPreferences.size)
+
 
 }

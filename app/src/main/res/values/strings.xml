@@ -32,7 +32,7 @@
     <string name="menu_fragment_checkbox_accuracies">Show accuracies:</string>
     <string name="menu_fragment_show_as_line">Show locations connected with lines:</string>
     <string name="menu_fragment_algorithm_title">Show calculated locations using:</string>
-    <string name="menu_fragment_algorithm_1">Algorithm 1</string>
+    <string name="menu_fragment_algorithm_1"> Ramer-Douglas-Pecker</string>
     <string name="menu_fragment_algorithm_2">Algorithm 2</string>
     <string name="menu_fragment_algorithm_3">Algorithm 3</string>
 </resources>
