@@ -31,7 +31,6 @@ class MapFragment : Fragment() {
     private var dataAnalyzer: DataAnalyzer? = null
     private var delegate: ShowMenuFragmentDelegate? = null
     private lateinit var mapPreferencesHandler: MapPreferencesHandler
-    private var measuredPolyline: Polyline? = null
     private val polygons: ArrayList<Polygon> = ArrayList()
 
 
@@ -78,7 +77,7 @@ class MapFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        measuredPolyline = Polyline()
+
 
         val showAccuracies = mapPreferencesHandler.getAccuracyPreference()
         Log.i("test", "map fragment on start, accuracies show: $showAccuracies")
@@ -91,12 +90,7 @@ class MapFragment : Fragment() {
                 if (mapPreferencesHandler.getAccuracyPreference()) {
                     constructPolygons(geoPoints, dataAnalyzer!!.getAccuracies())
                 }
-
-                if (mapPreferencesHandler.getShowLinesPreference()) {
-                    drawLocations(true, geoPoints)
-                } else {
-                    drawLocations(false, geoPoints)
-                }
+                drawPaths()
 
             }
 
@@ -104,7 +98,7 @@ class MapFragment : Fragment() {
         }
 
     }
-
+    /*
     private fun drawLocations(drawAsLine: Boolean, gpoints: ArrayList<GeoPoint>) {
         if (map == null) {
             Log.i("test", "map null")
@@ -123,7 +117,7 @@ class MapFragment : Fragment() {
             }
             map?.invalidate()
         }
-    }
+    }*/
 
     private fun constructPolygons(gpoints: ArrayList<GeoPoint>, accuracies: ArrayList<Float>) {
         for ((index, gp) in gpoints.withIndex()) {
@@ -175,12 +169,24 @@ class MapFragment : Fragment() {
         return GeoPoint(lat + rlat * cos(2 * PI * t / part), lgn + rlng * sin(2 * PI * t / part))
     }
 
-    private fun drawdrawCorrectedPaths(){
+    private fun drawPaths(){
+
         val amoutOfPreferences = mapPreferencesHandler.getAmoutOfAlgorithmPreferences()
-        for(i in 0..amoutOfPreferences){
+        val polylines = arrayOfNulls<Polyline>(amoutOfPreferences)
+        for(i in 0 until amoutOfPreferences){
+            polylines[i] = Polyline()
             if(mapPreferencesHandler.getAlgorithmPreference(i)){
-                when (0)
+                when (i){
+                    0->{
+                        polylines[0]?.setPoints(dataAnalyzer?.getMeasuredLocationsAsGeoPoints())
+                    }
+                    1 ->{
+                        polylines[1]?.setPoints(dataAnalyzer?.getAlgorithm1GeoPoints(0.001))
+                    }
+                }
+                map?.overlayManager?.add(polylines[i])
             }
+            map?.invalidate()
         }
     }
 

@@ -37,10 +37,10 @@ class MenuFragment: Fragment(){
             mapPreferencesHandler.storeAccuracyPreference(isChecked)
         }
 
-        val showLinesCheckBox = view.findViewById<CheckBox>(R.id.menu_fragment_show_lines_checkbox)
-        showLinesCheckBox.isChecked = mapPreferencesHandler.getShowLinesPreference()
-        showLinesCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            mapPreferencesHandler.storeShowLinesPreference(isChecked)
+        val showMeasuredCheckBox = view.findViewById<CheckBox>(R.id.menu_fragment_show_measured_checkbox)
+        showMeasuredCheckBox.isChecked = mapPreferencesHandler.getAlgorithmPreference(0)
+        showMeasuredCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            mapPreferencesHandler.storeAlgorithmPreference(0,isChecked)
         }
 
         val algorithmChecBoxes: ArrayList<CheckBox> = ArrayList()
@@ -48,9 +48,9 @@ class MenuFragment: Fragment(){
         algorithmChecBoxes.add(view.findViewById(R.id.menu_fragment_algorithm_2_checkbox))
         algorithmChecBoxes.add(view.findViewById(R.id.menu_fragment_algorithm_3_checkbox))
         for((index, aCheckBox) in algorithmChecBoxes.withIndex()){
-            aCheckBox.isChecked = mapPreferencesHandler.getAlgorithmPreference(index)
+            aCheckBox.isChecked = mapPreferencesHandler.getAlgorithmPreference(index+1)
             aCheckBox.setOnCheckedChangeListener{_, isCheked ->
-                mapPreferencesHandler.storeAlgorithmPreference(index,isCheked)
+                mapPreferencesHandler.storeAlgorithmPreference(index+1,isCheked)
             }
         }
 

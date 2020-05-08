@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -25,6 +24,17 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/menu_fragment_show_measured_checkbox"
+        android:text="@string/menu_fragment_show_measured"
+        android:layout_margin="20dp"
+        android:checked="true"
+        app:layout_constraintTop_toBottomOf="@id/menu_fragment_title_textview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <CheckBox
         android:id="@+id/menu_fragment_accuracies_checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,18 +43,9 @@
         android:checked="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menu_fragment_title_textview" />
+        app:layout_constraintTop_toBottomOf="@+id/menu_fragment_show_measured_checkbox" />
 
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/menu_fragment_show_lines_checkbox"
-        android:text="@string/menu_fragment_show_as_line"
-        android:layout_margin="20dp"
-        android:checked="true"
-        app:layout_constraintTop_toBottomOf="@id/menu_fragment_accuracies_checkBox"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+
 
     <TextView
         android:id="@+id/menu_fragment_algorithm_title"
@@ -52,7 +53,7 @@
         android:layout_height="wrap_content"
         android:text="@string/menu_fragment_algorithm_title"
         android:layout_margin="20dp"
-        app:layout_constraintTop_toBottomOf="@id/menu_fragment_show_lines_checkbox"
+        app:layout_constraintTop_toBottomOf="@id/menu_fragment_accuracies_checkBox"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

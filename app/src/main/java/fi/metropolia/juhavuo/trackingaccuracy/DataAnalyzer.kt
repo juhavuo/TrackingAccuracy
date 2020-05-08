@@ -119,7 +119,7 @@ class DataAnalyzer(val id: Int, val context: Context){
     /**
      * for algorithm 1: Ramer-Douglas-Pecker
      */
-    fun getRDPGeoPoints(epsilon: Double): ArrayList<GeoPoint>{
+    fun getAlgorithm1GeoPoints(epsilon: Double): ArrayList<GeoPoint>{
         val locations = ramerDouglasPeucker(measuredLocations,epsilon)
         return getMeasuredLocationsAsGeoPoints(locations)
     }
