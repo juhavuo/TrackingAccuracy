@@ -1,6 +1,8 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -176,12 +178,14 @@ class MapFragment : Fragment() {
         for(i in 0 until amoutOfPreferences){
             polylines[i] = Polyline()
             if(mapPreferencesHandler.getAlgorithmPreference(i)){
+                polylines[i]?.outlinePaint?.color = resources.getColor(R.color.colorPrimary,null)
+
                 when (i){
                     0->{
                         polylines[0]?.setPoints(dataAnalyzer?.getMeasuredLocationsAsGeoPoints())
                     }
                     1 ->{
-                        polylines[1]?.setPoints(dataAnalyzer?.getAlgorithm1GeoPoints(0.001))
+                        polylines[1]?.setPoints(dataAnalyzer?.getAlgorithm1GeoPoints(0.00008))
                     }
                 }
                 map?.overlayManager?.add(polylines[i])

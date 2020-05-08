@@ -54,7 +54,7 @@ class DataAnalyzer(val id: Int, val context: Context){
     }
 
     //ttps://rosettacode.org/wiki/Ramer-Douglas-Peucker_line_simplification#Kotlin
-    private fun rdpDistance(location: MeasuredLocation, startLocation : MeasuredLocation, endLocation: MeasuredLocation): Double{
+    private fun perpendicularDistance(location: MeasuredLocation, startLocation : MeasuredLocation, endLocation: MeasuredLocation): Double{
         var dx = endLocation.longitude - startLocation.longitude
         var dy = endLocation.latitude - startLocation.latitude
 
@@ -77,50 +77,47 @@ class DataAnalyzer(val id: Int, val context: Context){
         return hypot(ax, ay)
     }
 
-    //ttps://rosettacode.org/wiki/Ramer-Douglas-Peucker_line_simplification#Kotlin
-    private fun ramerDouglasPeucker(mlocations: ArrayList<MeasuredLocation> ,epsilon: Double): ArrayList<MeasuredLocation>{
 
-        val calculatedLocations: ArrayList<MeasuredLocation> = ArrayList()
+    fun ramerDouglasPeucker(pointList: List<MeasuredLocation>, epsilon: Double, out: MutableList<MeasuredLocation>) {
+        if (pointList.size < 2) throw IllegalArgumentException("Not enough points to simplify")
 
-        if(mlocations.size<2){
-            return calculatedLocations
-        }
-
-        val dmax = 0.0
+        // Find the point with the maximum distance from line between start and end
+        var dmax = 0.0
         var index = 0
-        val end = mlocations.size -1
-
-        for (i in 1 until end){
-            val d = rdpDistance(mlocations[i],mlocations[0],mlocations[end])
+        val end = pointList.size - 1
+        for (i in 1 until end) {
+            val d = perpendicularDistance(pointList[i], pointList[0], pointList[end])
+            if (d > dmax) { index = i; dmax = d }
         }
 
-        if(dmax> epsilon){
-            var recResults1: ArrayList<MeasuredLocation> = ArrayList()
-            var recResults2: ArrayList<MeasuredLocation> = ArrayList()
-            val firstLine = mlocations.take(index+1) as ArrayList<MeasuredLocation>
-            val lastLine= mlocations.drop(index) as ArrayList<MeasuredLocation>
-            recResults1 = ramerDouglasPeucker(firstLine, epsilon)
-            recResults2 = ramerDouglasPeucker(lastLine,epsilon)
-            calculatedLocations.addAll(recResults1.take(recResults1.size-1))
-            calculatedLocations.addAll(recResults2)
-            if(calculatedLocations.size <2){
-                calculatedLocations.clear()
-                return calculatedLocations
-            }
-        }else{
-            calculatedLocations.clear()
-            calculatedLocations.add(mlocations.first())
-            calculatedLocations.add(mlocations.last())
-        }
+        // If max distance is greater than epsilon, recursively simplify
+        if (dmax > epsilon) {
+            val recResults1 = mutableListOf<MeasuredLocation>()
+            val recResults2 = mutableListOf<MeasuredLocation>()
+            val firstLine = pointList.take(index + 1)
+            val lastLine  = pointList.drop(index)
+            ramerDouglasPeucker(firstLine, epsilon, recResults1)
+            ramerDouglasPeucker(lastLine, epsilon, recResults2)
 
-        return calculatedLocations
+            // build the result list
+            out.addAll(recResults1.take(recResults1.size - 1))
+            out.addAll(recResults2)
+            if (out.size < 2) throw RuntimeException("Problem assembling output")
+        }
+        else {
+            // Just return start and end points
+            out.clear()
+            out.add(pointList.first())
+            out.add(pointList.last())
+        }
     }
 
     /**
      * for algorithm 1: Ramer-Douglas-Pecker
      */
     fun getAlgorithm1GeoPoints(epsilon: Double): ArrayList<GeoPoint>{
-        val locations = ramerDouglasPeucker(measuredLocations,epsilon)
+        val locations: ArrayList<MeasuredLocation> = ArrayList()
+        ramerDouglasPeucker(measuredLocations,epsilon,locations)
         return getMeasuredLocationsAsGeoPoints(locations)
     }
 
