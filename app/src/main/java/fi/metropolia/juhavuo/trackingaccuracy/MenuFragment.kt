@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageButton
+import android.widget.SeekBar
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 
 class MenuFragment: Fragment(){
@@ -53,6 +55,21 @@ class MenuFragment: Fragment(){
                 mapPreferencesHandler.storeAlgorithmPreference(index+1,isCheked)
             }
         }
+
+        val epsilonTextView = view.findViewById<TextView>(R.id.menu_fragment_epsilon_value)
+        val epsilonSeekBar = view.findViewById<SeekBar>(R.id.menu_fragment_epsilon_seekbar)
+        epsilonSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                var epsilon = progress/1000000.0
+                epsilonTextView.text = epsilon.toString()
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {}
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {}
+
+        })
+
 
         val closeButton = view.findViewById<ImageButton>(R.id.menu_fragment_close_button)
         closeButton.setOnClickListener {

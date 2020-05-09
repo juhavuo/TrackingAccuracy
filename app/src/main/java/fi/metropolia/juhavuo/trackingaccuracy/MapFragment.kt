@@ -178,13 +178,13 @@ class MapFragment : Fragment() {
         for(i in 0 until amoutOfPreferences){
             polylines[i] = Polyline()
             if(mapPreferencesHandler.getAlgorithmPreference(i)){
-                polylines[i]?.outlinePaint?.color = resources.getColor(R.color.colorPrimary,null)
-
                 when (i){
                     0->{
+                        polylines[0]?.outlinePaint?.color = resources.getColor(R.color.colorMeasuredPolyline,null)
                         polylines[0]?.setPoints(dataAnalyzer?.getMeasuredLocationsAsGeoPoints())
                     }
                     1 ->{
+                        polylines[1]?.outlinePaint?.color = resources.getColor(R.color.colorAlgorithm1Polyline, null)
                         polylines[1]?.setPoints(dataAnalyzer?.getAlgorithm1GeoPoints(0.00008))
                     }
                 }

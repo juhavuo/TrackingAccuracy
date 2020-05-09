@@ -33,6 +33,7 @@
     <string name="menu_fragment_show_measured">Show measured locations:</string>
     <string name="menu_fragment_algorithm_title">Show calculated locations using:</string>
     <string name="menu_fragment_algorithm_1"> Ramer-Douglas-Pecker</string>
+    <string name="menu_fragment_epsilon_slider_title">Epsilon:</string>
     <string name="menu_fragment_algorithm_2">Algorithm 2</string>
     <string name="menu_fragment_algorithm_3">Algorithm 3</string>
 </resources>
