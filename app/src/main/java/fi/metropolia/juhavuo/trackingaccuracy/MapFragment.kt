@@ -13,6 +13,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -34,6 +37,8 @@ class MapFragment : Fragment() {
     private var delegate: ShowMenuFragmentDelegate? = null
     private lateinit var mapPreferencesHandler: MapPreferencesHandler
     private val polygons: ArrayList<Polygon> = ArrayList()
+    private var isZoomed = false
+    private var zoomLevel = 15.0
 
 
     override fun onAttach(context: Context) {
@@ -61,10 +66,26 @@ class MapFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        isZoomed = false
+
         val view = inflater.inflate(R.layout.fragment_map, container, false)
         val title = view.findViewById<TextView>(R.id.map_fragment_title)
         map = view.findViewById<MapView>(R.id.map_fragment_map)
         map?.setTileSource(TileSourceFactory.MAPNIK)
+        map?.addMapListener(object: MapListener{
+            override fun onScroll(event: ScrollEvent?): Boolean {
+                return false
+            }
+
+            override fun onZoom(event: ZoomEvent?): Boolean {
+                if(event != null){
+                    zoomLevel = event.zoomLevel
+                    isZoomed = true
+                }
+                return true
+            }
+
+        })
         val menubutton = view.findViewById<ImageButton>(R.id.map_fragment_menu_button)
         menubutton.setOnClickListener {
             delegate?.showMenuFragment(this)
@@ -86,7 +107,7 @@ class MapFragment : Fragment() {
         if (dataAnalyzer != null) {
             val geoPoints = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
             if (geoPoints.isNotEmpty()) {
-                map?.controller?.setZoom(14.0)
+                map?.controller?.setZoom(mapPreferencesHandler.getMapZoomPreference())
                 map?.controller?.setCenter(geoPoints[0])
 
                 if (mapPreferencesHandler.getAccuracyPreference()) {
@@ -100,26 +121,6 @@ class MapFragment : Fragment() {
         }
 
     }
-    /*
-    private fun drawLocations(drawAsLine: Boolean, gpoints: ArrayList<GeoPoint>) {
-        if (map == null) {
-            Log.i("test", "map null")
-        }
-        if (drawAsLine) {
-            measuredPolyline?.setPoints(gpoints)
-            map?.overlayManager?.add(measuredPolyline)
-            map?.invalidate()
-        } else {
-            for (gp in gpoints) {
-                //map?.overlayManager?.remove(measuredPolyline)
-                val marker = Marker(map)
-                marker.position = gp
-                marker.icon = resources.getDrawable(R.drawable.map_marker, null)
-                map?.overlays?.add(marker)
-            }
-            map?.invalidate()
-        }
-    }*/
 
     private fun constructPolygons(gpoints: ArrayList<GeoPoint>, accuracies: ArrayList<Float>) {
         for ((index, gp) in gpoints.withIndex()) {
@@ -155,6 +156,13 @@ class MapFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if(isZoomed){
+            mapPreferencesHandler.storeMapZoomPreference(zoomLevel)
+        }
+    }
+
 
     private fun calculatePointInCircle(
         lat: Double,
@@ -185,7 +193,8 @@ class MapFragment : Fragment() {
                     }
                     1 ->{
                         polylines[1]?.outlinePaint?.color = resources.getColor(R.color.colorAlgorithm1Polyline, null)
-                        polylines[1]?.setPoints(dataAnalyzer?.getAlgorithm1GeoPoints(0.00008))
+                        val epsilon = mapPreferencesHandler.getEpsilonPreference()
+                        polylines[1]?.setPoints(dataAnalyzer?.getAlgorithm1GeoPoints(epsilon))
                     }
                 }
                 map?.overlayManager?.add(polylines[i])

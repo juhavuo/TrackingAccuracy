@@ -11,6 +11,8 @@ class MapPreferencesHandler(context: Context){
     private val showLinesPreference = "showlines"
     private val showMeasuredPreference = "showmeasured"
     private val algorithmPreferences = arrayOf("measured","algorithm1","algorithm2","algorithm3")
+    private val epsilonPreference = "epsilon"
+    private val mapZoomPreference = "mapzoom"
 
     fun storeAccuracyPreference(showAccuracies: Boolean){
         editor.putBoolean(accuraciesPrference,showAccuracies)
@@ -29,6 +31,18 @@ class MapPreferencesHandler(context: Context){
         }
     }
 
+    fun storeEpsilonPreference(epsilon: Double){
+        val epsilonString = epsilon.toString()
+        editor.putString(epsilonPreference,epsilonString)
+        editor.apply()
+    }
+
+    fun storeMapZoomPreference(zoomLevel: Double){
+        val zoomLevelString = zoomLevel.toString()
+        editor.putString(mapZoomPreference,zoomLevelString)
+        editor.apply()
+    }
+
     fun getAccuracyPreference(): Boolean = sharedPreferences.getBoolean(accuraciesPrference,true)
 
     fun getShowLinesPreference(): Boolean = sharedPreferences.getBoolean(showLinesPreference,true)
@@ -45,6 +59,16 @@ class MapPreferencesHandler(context: Context){
         }else{
             return false
         }
+    }
+
+    fun getEpsilonPreference(): Double{
+        val epsilonString = sharedPreferences.getString(epsilonPreference,"0.00001")
+        return epsilonString!!.toDouble()
+    }
+
+    fun getMapZoomPreference(): Double{
+        val mapZoomString = sharedPreferences.getString(mapZoomPreference,"15.0")
+        return mapZoomString!!.toDouble()
     }
 
     private fun checkArrayIndex(index: Int): Boolean = (index >= 0 || index < algorithmPreferences.size)
