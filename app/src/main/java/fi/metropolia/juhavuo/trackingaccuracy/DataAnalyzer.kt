@@ -1,12 +1,11 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
 import android.content.Context
-import android.location.Location
 import android.util.Log
 import org.osmdroid.util.GeoPoint
 import kotlin.math.hypot
 
-class DataAnalyzer(val id: Int, val context: Context){
+class DataAnalyzer(val id: Int, val context: Context) {
 
     private var measuredLocations: ArrayList<MeasuredLocation> = ArrayList()
 
@@ -20,32 +19,32 @@ class DataAnalyzer(val id: Int, val context: Context){
     }
 
 
-    fun getOriginalLocations(): ArrayList<MeasuredLocation>{
+    fun getOriginalLocations(): ArrayList<MeasuredLocation> {
         return measuredLocations
     }
 
-    fun getMeasuredLocationsAsGeoPoints(): ArrayList<GeoPoint>{
+    fun getMeasuredLocationsAsGeoPoints(): ArrayList<GeoPoint> {
         val geoPoints: ArrayList<GeoPoint> = ArrayList()
-        for(measuredLocation in measuredLocations){
-            geoPoints.add(GeoPoint(measuredLocation.latitude,measuredLocation.longitude))
+        for (measuredLocation in measuredLocations) {
+            geoPoints.add(GeoPoint(measuredLocation.latitude, measuredLocation.longitude))
         }
         return geoPoints
     }
 
-    private fun getMeasuredLocationsAsGeoPoints(mlocations: ArrayList<MeasuredLocation>): ArrayList<GeoPoint>{
+    private fun getMeasuredLocationsAsGeoPoints(mlocations: ArrayList<MeasuredLocation>): ArrayList<GeoPoint> {
         val geoPoints: ArrayList<GeoPoint> = ArrayList()
-        for(measuredLocation in mlocations){
-            geoPoints.add(GeoPoint(measuredLocation.latitude,measuredLocation.longitude))
+        for (measuredLocation in mlocations) {
+            geoPoints.add(GeoPoint(measuredLocation.latitude, measuredLocation.longitude))
         }
         return geoPoints
     }
 
-    fun getAccuracies(): ArrayList<Float>{
+    fun getAccuracies(): ArrayList<Float> {
         val accuracies: ArrayList<Float> = ArrayList()
-        for(location in measuredLocations){
-            if(location.accuracy == null){
+        for (location in measuredLocations) {
+            if (location.accuracy == null) {
                 accuracies.add(0.0f)
-            }else{
+            } else {
                 accuracies.add(location.accuracy)
             }
         }
@@ -54,14 +53,18 @@ class DataAnalyzer(val id: Int, val context: Context){
     }
 
     //ttps://rosettacode.org/wiki/Ramer-Douglas-Peucker_line_simplification#Kotlin
-    private fun perpendicularDistance(location: MeasuredLocation, startLocation : MeasuredLocation, endLocation: MeasuredLocation): Double{
+    private fun perpendicularDistance(
+        location: MeasuredLocation,
+        startLocation: MeasuredLocation,
+        endLocation: MeasuredLocation
+    ): Double {
         var dx = endLocation.longitude - startLocation.longitude
         var dy = endLocation.latitude - startLocation.latitude
 
         val pointList = measuredLocations
 
-        val mag = hypot(dx,dy)
-        if(mag>0.0){
+        val mag = hypot(dx, dy)
+        if (mag > 0.0) {
             dx /= mag
             dy /= mag
         }
@@ -69,7 +72,7 @@ class DataAnalyzer(val id: Int, val context: Context){
         val pvx = location.longitude - startLocation.longitude
         val pvy = location.latitude - startLocation.latitude
 
-        val pvdot = dx*pvx + dy*pvy
+        val pvdot = dx * pvx + dy * pvy
 
         val ax = pvx - pvdot * dx
         val ay = pvy - pvdot * dy
@@ -78,7 +81,11 @@ class DataAnalyzer(val id: Int, val context: Context){
     }
 
 
-    fun ramerDouglasPeucker(pointList: List<MeasuredLocation>, epsilon: Double, out: MutableList<MeasuredLocation>) {
+    fun ramerDouglasPeucker(
+        pointList: List<MeasuredLocation>,
+        epsilon: Double,
+        out: MutableList<MeasuredLocation>
+    ) {
         if (pointList.size < 2) throw IllegalArgumentException("Not enough points to simplify")
 
         // Find the point with the maximum distance from line between start and end
@@ -87,7 +94,9 @@ class DataAnalyzer(val id: Int, val context: Context){
         val end = pointList.size - 1
         for (i in 1 until end) {
             val d = perpendicularDistance(pointList[i], pointList[0], pointList[end])
-            if (d > dmax) { index = i; dmax = d }
+            if (d > dmax) {
+                index = i; dmax = d
+            }
         }
 
         // If max distance is greater than epsilon, recursively simplify
@@ -95,7 +104,7 @@ class DataAnalyzer(val id: Int, val context: Context){
             val recResults1 = mutableListOf<MeasuredLocation>()
             val recResults2 = mutableListOf<MeasuredLocation>()
             val firstLine = pointList.take(index + 1)
-            val lastLine  = pointList.drop(index)
+            val lastLine = pointList.drop(index)
             ramerDouglasPeucker(firstLine, epsilon, recResults1)
             ramerDouglasPeucker(lastLine, epsilon, recResults2)
 
@@ -103,8 +112,7 @@ class DataAnalyzer(val id: Int, val context: Context){
             out.addAll(recResults1.take(recResults1.size - 1))
             out.addAll(recResults2)
             if (out.size < 2) throw RuntimeException("Problem assembling output")
-        }
-        else {
+        } else {
             // Just return start and end points
             out.clear()
             out.add(pointList.first())
@@ -115,10 +123,35 @@ class DataAnalyzer(val id: Int, val context: Context){
     /**
      * for algorithm 1: Ramer-Douglas-Pecker
      */
-    fun getAlgorithm1GeoPoints(epsilon: Double): ArrayList<GeoPoint>{
+    fun getAlgorithm1GeoPoints(epsilon: Double): ArrayList<GeoPoint> {
         val locations: ArrayList<MeasuredLocation> = ArrayList()
-        ramerDouglasPeucker(measuredLocations,epsilon,locations)
+        ramerDouglasPeucker(measuredLocations, epsilon, locations)
         return getMeasuredLocationsAsGeoPoints(locations)
+    }
+
+    fun getKalmanFilteredGeoPoints(): ArrayList<GeoPoint> {
+        val kalmanGeoPoints: ArrayList<GeoPoint> = ArrayList()
+        val kalmanFilter = KalmanFilter(3f)
+
+
+
+        kalmanFilter.setState(
+            measuredLocations[0].latitude,
+            measuredLocations[0].longitude,
+            measuredLocations[0].accuracy,
+            measuredLocations[0].timestamp
+        )
+        for(index in 1 until measuredLocations.size){
+            kalmanFilter.process(measuredLocations[index].latitude
+            ,measuredLocations[index].longitude
+            ,measuredLocations[index].accuracy
+            ,measuredLocations[index].timestamp)
+
+            kalmanGeoPoints.add(GeoPoint(kalmanFilter.lat,kalmanFilter.lng))
+        }
+
+        return kalmanGeoPoints
+
     }
 
 }

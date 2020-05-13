@@ -196,6 +196,10 @@ class MapFragment : Fragment() {
                         val epsilon = mapPreferencesHandler.getEpsilonPreference()
                         polylines[1]?.setPoints(dataAnalyzer?.getAlgorithm1GeoPoints(epsilon))
                     }
+                    2->{
+                        polylines[2]?.outlinePaint?.color = resources.getColor(R.color.colorAlgorithm2Polyline, null)
+                        polylines[2]?.setPoints(dataAnalyzer?.getKalmanFilteredGeoPoints())
+                    }
                 }
                 map?.overlayManager?.add(polylines[i])
             }

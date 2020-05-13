@@ -151,7 +151,7 @@ class LocationService: Service(){
                 Log.i("index","$routeid")
 
                 for ((index, location) in locationList.withIndex()) {
-                    val measuredLocation = MeasuredLocation(indexbase+index,routeid,location.latitude,location.longitude,location.altitude,location.accuracy)
+                    val measuredLocation = MeasuredLocation(indexbase+index,routeid,location.latitude,location.longitude,location.altitude,location.speed,location.accuracy,location.time)
                     Log.i("index","index raising  ${indexbase+index}")
                     database.measuredLocationDao().insert(measuredLocation)
                     Log.i("test","location inserted")
