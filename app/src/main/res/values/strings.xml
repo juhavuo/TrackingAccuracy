@@ -35,5 +35,7 @@
     <string name="menu_fragment_algorithm_1"> Ramer-Douglas-Pecker</string>
     <string name="menu_fragment_epsilon_slider_title">Epsilon:</string>
     <string name="menu_fragment_algorithm_2">Kalman</string>
-    <string name="menu_fragment_algorithm_3">Algorithm 3</string>
+    <string name="menu_fragment_algorithm_3">Eliminate the least accurate</string>
+    <string name="menu_fragment_accuracy_threshold_textview">Accuracy threshold</string>
+    <string name="menu_fragment_locations_removed_textview">%1$d//%2$d of locations removed</string>
 </resources>

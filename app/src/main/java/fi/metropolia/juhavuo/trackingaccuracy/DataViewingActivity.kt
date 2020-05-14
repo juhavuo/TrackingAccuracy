@@ -32,6 +32,7 @@ class DataViewingActivity : AppCompatActivity(), ShowMenuFragmentDelegate, Close
             .commit()
 
         mapFragment.getDataAnalyzer(dataAnalyzer)
+        menuFragment.getDataAnalyzer(dataAnalyzer)
 
         data_viewing_bottom_bar.setOnNavigationItemSelectedListener {menuItem ->
             when(menuItem.itemId){

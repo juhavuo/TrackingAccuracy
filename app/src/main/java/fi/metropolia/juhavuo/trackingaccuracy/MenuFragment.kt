@@ -15,6 +15,7 @@ class MenuFragment: Fragment(){
 
     private var delegate: CloseMenuFragmentDelegate? = null
     private lateinit var mapPreferencesHandler: MapPreferencesHandler
+    private var dataAnalyzer: DataAnalyzer? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -74,12 +75,15 @@ class MenuFragment: Fragment(){
 
         })
 
-
         val closeButton = view.findViewById<ImageButton>(R.id.menu_fragment_close_button)
         closeButton.setOnClickListener {
             delegate?.closeMenuFragment()
         }
         return view
+    }
+
+    fun getDataAnalyzer(da: DataAnalyzer){
+        dataAnalyzer = da
     }
 
 }

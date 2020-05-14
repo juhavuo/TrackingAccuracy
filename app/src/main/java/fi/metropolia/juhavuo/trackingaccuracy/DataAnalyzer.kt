@@ -154,4 +154,63 @@ class DataAnalyzer(val id: Int, val context: Context) {
 
     }
 
+    /*
+        Get smallest and biggest accuracy value of measured locations of route
+        The extremes are returned as array, in which: index 0: smallest, index 1: biggest
+     */
+    fun getExtremeAccuracies(): FloatArray {
+        if(measuredLocations.size==0){
+            return floatArrayOf(0f,0f)
+        }else if(measuredLocations.size ==1) {
+            return floatArrayOf(measuredLocations[0].accuracy,measuredLocations[0].accuracy)
+        }else {
+            val cloneOfMeasuredLocations = getLocationsOrganizedByAccuracy()
+            return floatArrayOf(cloneOfMeasuredLocations[0].accuracy,cloneOfMeasuredLocations.last().accuracy)
+        }
+    }
+
+    fun getAmountOfPointsToBeRemoved(threshold_accuracy: Float): Int{
+        val cloneOfMeasuredLocations = getLocationsOrganizedByAccuracy()
+        var threshold_index = -1
+        for((index, mlocation) in cloneOfMeasuredLocations.withIndex()){
+            if(mlocation.accuracy > threshold_accuracy){
+                threshold_index = index
+                break
+            }
+        }
+
+        if(threshold_index<0){
+            return 0
+        }else{
+            return cloneOfMeasuredLocations.size - threshold_index
+        }
+    }
+
+    fun getRemainingLocations(threshold_accuracy: Float): ArrayList<GeoPoint>{
+        val cloneOfMeasuredLocations = getLocationsOrganizedByAccuracy()
+        val geoPoints: ArrayList<GeoPoint> = ArrayList()
+        for(mlocation in cloneOfMeasuredLocations){
+            if(mlocation.accuracy <= threshold_accuracy){
+                geoPoints.add(GeoPoint(mlocation.latitude,mlocation.longitude))
+            }else{
+                break
+            }
+        }
+
+        return geoPoints
+    }
+
+    private fun getLocationsOrganizedByAccuracy(): ArrayList<MeasuredLocation>{
+        val cloneOfMeasuredLocations = measuredLocations.clone() as ArrayList<MeasuredLocation>
+        cloneOfMeasuredLocations.sortWith(Comparator { p0, p1 ->
+            when {
+                p0.accuracy > p1.accuracy -> 1
+                p0.accuracy == p1.accuracy -> 0
+                else -> -1
+            }
+        })
+
+        return cloneOfMeasuredLocations
+    }
+
 }
