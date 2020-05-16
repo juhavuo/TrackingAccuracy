@@ -76,7 +76,7 @@ class MenuFragment: Fragment(){
         })
 
         val accuracySeekbar = view.findViewById<SeekBar>(R.id.menu_fragment_accuracy_threshold_seekbar)
-        val accuracyThresholdTextView = view.findViewById<TextView>(R.id.menu_fragment_accuracy_threshold_textview)
+        val accuracyThresholdTextView = view.findViewById<TextView>(R.id.menu_fragment_accuracy_threshold_value_textview)
         val locationsRemovedTextView = view.findViewById<TextView>(R.id.menu_fragment_locations_removed_textview)
         var accuracyThSeekbarReading = mapPreferencesHandler.getAccuracyThresholdPreference()
         var accuracyThreshold = 0f
@@ -105,6 +105,7 @@ class MenuFragment: Fragment(){
                         accuracyThresholdTextView.text = accuracyThreshold.toString()
                         pointsToRemoved = dataAnalyzer!!.getAmountOfPointsToBeRemoved(accuracyThreshold)
                         locationsRemovedTextView.text = resources.getString(R.string.menu_fragment_locations_removed_textview,pointsToRemoved,amountOfLocations)
+                        mapPreferencesHandler.storeAccuracyTresholdPreference(value)
                     }
                 }
             }

@@ -166,26 +166,22 @@ class DataAnalyzer(val id: Int, val context: Context) {
         }else if(measuredLocations.size ==1) {
             return floatArrayOf(measuredLocations[0].accuracy,measuredLocations[0].accuracy)
         }else {
-            val cloneOfMeasuredLocations = getLocationsOrganizedByAccuracy()
-            return floatArrayOf(cloneOfMeasuredLocations[0].accuracy,cloneOfMeasuredLocations.last().accuracy)
+            val accuracies = getAccuracies()
+            accuracies.sort()
+            return floatArrayOf(accuracies[0],accuracies.last())
         }
     }
 
     fun getAmountOfPointsToBeRemoved(threshold_accuracy: Float): Int{
-        val cloneOfMeasuredLocations = getLocationsOrganizedByAccuracy()
-        var threshold_index = -1
-        for((index, mlocation) in cloneOfMeasuredLocations.withIndex()){
-            if(mlocation.accuracy > threshold_accuracy){
-                threshold_index = index
-                break
+        val accuracies = getAccuracies()
+        var count = 0
+        for(accuracy in accuracies){
+            if(accuracy> threshold_accuracy){
+                ++count
             }
         }
 
-        if(threshold_index<0){
-            return 0
-        }else{
-            return cloneOfMeasuredLocations.size - threshold_index
-        }
+        return count
     }
 
     fun calculateAccuracyFromBarReading(s: Int, sMax: Int): Float {
@@ -199,13 +195,10 @@ class DataAnalyzer(val id: Int, val context: Context) {
     }
 
     fun getRemainingLocations(threshold_accuracy: Float): ArrayList<GeoPoint>{
-        val cloneOfMeasuredLocations = getLocationsOrganizedByAccuracy()
         val geoPoints: ArrayList<GeoPoint> = ArrayList()
-        for(mlocation in cloneOfMeasuredLocations){
+        for(mlocation in measuredLocations){
             if(mlocation.accuracy <= threshold_accuracy){
                 geoPoints.add(GeoPoint(mlocation.latitude,mlocation.longitude))
-            }else{
-                break
             }
         }
 
