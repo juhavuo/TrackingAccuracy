@@ -200,6 +200,14 @@ class MapFragment : Fragment() {
                         polylines[2]?.outlinePaint?.color = resources.getColor(R.color.colorAlgorithm2Polyline, null)
                         polylines[2]?.setPoints(dataAnalyzer?.getKalmanFilteredGeoPoints())
                     }
+                    3->{
+                        polylines[3]?.outlinePaint?.color = resources.getColor(R.color.colorAlgorithm3Polyline,null)
+                        val accuracyThSeekbarValue = mapPreferencesHandler.getAccuracyThresholdPreference()
+                        val accuracyThreshold = dataAnalyzer?.calculateAccuracyFromBarReading(accuracyThSeekbarValue,1000)
+                        if(accuracyThreshold!=null) {
+                            polylines[3]?.setPoints(dataAnalyzer?.getRemainingLocations(accuracyThreshold))
+                        }
+                    }
                 }
                 map?.overlayManager?.add(polylines[i])
             }

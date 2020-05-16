@@ -18,6 +18,8 @@ class DataAnalyzer(val id: Int, val context: Context) {
         }.start()
     }
 
+    fun getAmountOfLocations(): Int = measuredLocations.size
+
 
     fun getOriginalLocations(): ArrayList<MeasuredLocation> {
         return measuredLocations
@@ -158,7 +160,7 @@ class DataAnalyzer(val id: Int, val context: Context) {
         Get smallest and biggest accuracy value of measured locations of route
         The extremes are returned as array, in which: index 0: smallest, index 1: biggest
      */
-    fun getExtremeAccuracies(): FloatArray {
+    fun getAccuracyExtremes(): FloatArray {
         if(measuredLocations.size==0){
             return floatArrayOf(0f,0f)
         }else if(measuredLocations.size ==1) {
@@ -184,6 +186,16 @@ class DataAnalyzer(val id: Int, val context: Context) {
         }else{
             return cloneOfMeasuredLocations.size - threshold_index
         }
+    }
+
+    fun calculateAccuracyFromBarReading(s: Int, sMax: Int): Float {
+        val extremes = getAccuracyExtremes()
+        return (extremes[1] - extremes[0]) * s / sMax + extremes[0]
+    }
+
+    private fun calculateBarReadingFromAccuracy(a: Float, sMax: Int): Int{
+        val extremes = getAccuracyExtremes()
+        return (sMax*(a-extremes[0])/(extremes[1]-extremes[0])).toInt()
     }
 
     fun getRemainingLocations(threshold_accuracy: Float): ArrayList<GeoPoint>{

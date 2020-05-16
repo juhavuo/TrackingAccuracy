@@ -75,12 +75,54 @@ class MenuFragment: Fragment(){
 
         })
 
+        val accuracySeekbar = view.findViewById<SeekBar>(R.id.menu_fragment_accuracy_threshold_seekbar)
+        val accuracyThresholdTextView = view.findViewById<TextView>(R.id.menu_fragment_accuracy_threshold_textview)
+        val locationsRemovedTextView = view.findViewById<TextView>(R.id.menu_fragment_locations_removed_textview)
+        var accuracyThSeekbarReading = mapPreferencesHandler.getAccuracyThresholdPreference()
+        var accuracyThreshold = 0f
+        var extremes = floatArrayOf(0f,0f)
+        var amountOfLocations = 0
+        var pointsToRemoved: Int
+        val sliderMax = 1000
+        if(dataAnalyzer!=null){
+
+            extremes = dataAnalyzer!!.getAccuracyExtremes()
+            accuracyThreshold = dataAnalyzer!!.calculateAccuracyFromBarReading(accuracyThSeekbarReading,sliderMax)
+            accuracySeekbar.progress = accuracyThSeekbarReading
+            if(extremes[1] > 0 && extremes[1] > extremes[0]){
+                amountOfLocations = dataAnalyzer!!.getAmountOfLocations()
+                pointsToRemoved = dataAnalyzer!!.getAmountOfPointsToBeRemoved(accuracyThreshold)
+                accuracyThresholdTextView.text = accuracyThreshold.toString()
+                locationsRemovedTextView.text = resources.getString(R.string.menu_fragment_locations_removed_textview,pointsToRemoved,amountOfLocations)
+            }
+        }
+
+        accuracySeekbar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(p0: SeekBar?, value: Int, p2: Boolean) {
+                if(extremes[1] > 0 && extremes[1] > extremes[0]){
+                    if(dataAnalyzer!=null){
+                        accuracyThreshold = dataAnalyzer!!.calculateAccuracyFromBarReading(value,sliderMax)
+                        accuracyThresholdTextView.text = accuracyThreshold.toString()
+                        pointsToRemoved = dataAnalyzer!!.getAmountOfPointsToBeRemoved(accuracyThreshold)
+                        locationsRemovedTextView.text = resources.getString(R.string.menu_fragment_locations_removed_textview,pointsToRemoved,amountOfLocations)
+                    }
+                }
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {}
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {}
+
+        })
+
         val closeButton = view.findViewById<ImageButton>(R.id.menu_fragment_close_button)
         closeButton.setOnClickListener {
             delegate?.closeMenuFragment()
         }
         return view
     }
+
+
 
     fun getDataAnalyzer(da: DataAnalyzer){
         dataAnalyzer = da

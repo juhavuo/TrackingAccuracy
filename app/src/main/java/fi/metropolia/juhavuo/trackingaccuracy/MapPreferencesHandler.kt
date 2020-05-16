@@ -6,23 +6,18 @@ class MapPreferencesHandler(context: Context){
 
     private val sharedPreferences = context.getSharedPreferences("map_preferences",Context.MODE_PRIVATE)
     private val editor = sharedPreferences.edit()
-
     private val accuraciesPrference = "accuracy"
     private val showLinesPreference = "showlines"
-    private val showMeasuredPreference = "showmeasured"
     private val algorithmPreferences = arrayOf("measured","algorithm1","algorithm2","algorithm3")
-    private val epsilonPreference = "epsilon"
+    private val epsilonPreference = "epsilon" //this would be better in database
     private val mapZoomPreference = "mapzoom"
+    private val accuracyThresholdPreference = "accuracythreshold" //this would be better in database
 
     fun storeAccuracyPreference(showAccuracies: Boolean){
         editor.putBoolean(accuraciesPrference,showAccuracies)
         editor.apply()
     }
 
-    fun storeShowLinesPreference(showLines: Boolean){
-        editor.putBoolean(showLinesPreference,showLines)
-        editor.apply()
-    }
 
     fun storeAlgorithmPreference(index: Int, value: Boolean){
         if(checkArrayIndex(index)){
@@ -40,6 +35,12 @@ class MapPreferencesHandler(context: Context){
     fun storeMapZoomPreference(zoomLevel: Double){
         val zoomLevelString = zoomLevel.toString()
         editor.putString(mapZoomPreference,zoomLevelString)
+        editor.apply()
+    }
+
+
+    fun storeAccuracyTresholdPreference(accuracyThreshold: Int){
+        editor.putInt(accuracyThresholdPreference, accuracyThreshold)
         editor.apply()
     }
 
@@ -70,6 +71,8 @@ class MapPreferencesHandler(context: Context){
         val mapZoomString = sharedPreferences.getString(mapZoomPreference,"15.0")
         return mapZoomString!!.toDouble()
     }
+
+    fun getAccuracyThresholdPreference(): Int = sharedPreferences.getInt(accuracyThresholdPreference,1000)
 
     private fun checkArrayIndex(index: Int): Boolean = (index >= 0 || index < algorithmPreferences.size)
 
