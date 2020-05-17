@@ -10,4 +10,6 @@
     <color name="colorAlgorithm1Polyline">#0011bb</color>
     <color name="colorAlgorithm2Polyline">#005020</color>
     <color name="colorAlgorithm3Polyline">#880022</color>
+    <color name="colorNumericalFragmentCellTitleBg">#ffbb40</color>
+    <color name="colorNumericalFragmentCellWall">#401000</color>
 </resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:id="@+id/numerical_fragment_recyclerview_row"
+    android:orientation="horizontal">
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/numerical_fragment_rv_row_latitude"
+        android:text="1"
+        android:background="@drawable/border_for_numerical_fragment_cell" />
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/numerical_fragment_rv_row_longitude"
+        android:text="2"
+        android:background="@drawable/border_for_numerical_fragment_cell"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/numerical_fragment_rv_row_accuracy"
+        android:text="3"
+        android:background="@drawable/border_for_numerical_fragment_cell"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/numerical_fragment_rv_row_altitude"
+        android:text="4"
+        android:background="@drawable/border_for_numerical_fragment_cell"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/numerical_fragment_rv_row_speed"
+        android:text="5"
+        android:background="@drawable/border_for_numerical_fragment_cell"/>
+</LinearLayout>
