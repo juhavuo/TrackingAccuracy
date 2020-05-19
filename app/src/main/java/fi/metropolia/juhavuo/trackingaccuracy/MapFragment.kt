@@ -33,6 +33,7 @@ import kotlin.math.sin
 class MapFragment : Fragment() {
 
     private var map: MapView? = null
+    private lateinit var lengths_listing_view: TextView
     private var dataAnalyzer: DataAnalyzer? = null
     private var delegate: ShowMenuFragmentDelegate? = null
     private lateinit var mapPreferencesHandler: MapPreferencesHandler
@@ -68,17 +69,19 @@ class MapFragment : Fragment() {
     ): View? {
         isZoomed = false
 
+
         val view = inflater.inflate(R.layout.fragment_map, container, false)
         val title = view.findViewById<TextView>(R.id.map_fragment_title)
+        lengths_listing_view = view.findViewById(R.id.map_fragment_lengths_listing_textview)
         map = view.findViewById<MapView>(R.id.map_fragment_map)
         map?.setTileSource(TileSourceFactory.MAPNIK)
-        map?.addMapListener(object: MapListener{
+        map?.addMapListener(object : MapListener {
             override fun onScroll(event: ScrollEvent?): Boolean {
                 return false
             }
 
             override fun onZoom(event: ZoomEvent?): Boolean {
-                if(event != null){
+                if (event != null) {
                     zoomLevel = event.zoomLevel
                     isZoomed = true
                 }
@@ -99,7 +102,6 @@ class MapFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-
 
 
         val showAccuracies = mapPreferencesHandler.getAccuracyPreference()
@@ -158,7 +160,7 @@ class MapFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if(isZoomed){
+        if (isZoomed) {
             mapPreferencesHandler.storeMapZoomPreference(zoomLevel)
         }
     }
@@ -179,40 +181,75 @@ class MapFragment : Fragment() {
         return GeoPoint(lat + rlat * cos(2 * PI * t / part), lgn + rlng * sin(2 * PI * t / part))
     }
 
-    private fun drawPaths(){
+    private fun drawPaths() {
 
         val amoutOfPreferences = mapPreferencesHandler.getAmoutOfAlgorithmPreferences()
         val polylines = arrayOfNulls<Polyline>(amoutOfPreferences)
-        for(i in 0 until amoutOfPreferences){
+        val lengthListings: ArrayList<String> = ArrayList()
+        for (i in 0 until amoutOfPreferences) {
             polylines[i] = Polyline()
-            if(mapPreferencesHandler.getAlgorithmPreference(i)){
-                when (i){
-                    0->{
-                        polylines[0]?.outlinePaint?.color = resources.getColor(R.color.colorMeasuredPolyline,null)
-                        polylines[0]?.setPoints(dataAnalyzer?.getMeasuredLocationsAsGeoPoints())
-                    }
-                    1 ->{
-                        polylines[1]?.outlinePaint?.color = resources.getColor(R.color.colorAlgorithm1Polyline, null)
-                        val epsilon = mapPreferencesHandler.getEpsilonPreference()
-                        polylines[1]?.setPoints(dataAnalyzer?.getAlgorithm1GeoPoints(epsilon))
-                    }
-                    2->{
-                        polylines[2]?.outlinePaint?.color = resources.getColor(R.color.colorAlgorithm2Polyline, null)
-                        polylines[2]?.setPoints(dataAnalyzer?.getKalmanFilteredGeoPoints())
-                    }
-                    3->{
-                        polylines[3]?.outlinePaint?.color = resources.getColor(R.color.colorAlgorithm3Polyline,null)
-                        val accuracyThSeekbarValue = mapPreferencesHandler.getAccuracyThresholdPreference()
-                        val accuracyThreshold = dataAnalyzer?.calculateAccuracyFromBarReading(accuracyThSeekbarValue,1000)
-                        if(accuracyThreshold!=null) {
-                            polylines[3]?.setPoints(dataAnalyzer?.getRemainingLocations(accuracyThreshold))
+            if (mapPreferencesHandler.getAlgorithmPreference(i)) {
+                when (i) {
+                    0 -> {
+                        polylines[0]?.outlinePaint?.color =
+                            resources.getColor(R.color.colorMeasuredPolyline, null)
+                        if (dataAnalyzer != null) {
+                            val points = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
+                            polylines[0]?.setPoints(points)
+                            val length = dataAnalyzer!!.getLengthOfRoute(points)
+                            lengthListings.add("0: $length m")
                         }
                     }
+                    1 -> {
+                        polylines[1]?.outlinePaint?.color =
+                            resources.getColor(R.color.colorAlgorithm1Polyline, null)
+                        val epsilon = mapPreferencesHandler.getEpsilonPreference()
+                        if (dataAnalyzer != null) {
+                            val points = dataAnalyzer!!.getAlgorithm1GeoPoints(epsilon)
+                            polylines[1]?.setPoints(points)
+                            val length = dataAnalyzer!!.getLengthOfRoute(points)
+                            lengthListings.add("1: $length m")
+                        }
+                    }
+                    2 -> {
+                        polylines[2]?.outlinePaint?.color =
+                            resources.getColor(R.color.colorAlgorithm2Polyline, null)
+                        if (dataAnalyzer != null) {
+                            val points = dataAnalyzer!!.getKalmanFilteredGeoPoints()
+                            polylines[2]?.setPoints(points)
+                            val length = dataAnalyzer!!.getLengthOfRoute(points)
+                            lengthListings.add("2: $length m")
+                        }
+                    }
+                    3 -> {
+                        polylines[3]?.outlinePaint?.color =
+                            resources.getColor(R.color.colorAlgorithm3Polyline, null)
+                        val accuracyThSeekbarValue =
+                            mapPreferencesHandler.getAccuracyThresholdPreference()
+                        if (dataAnalyzer != null) {
+                            val accuracyThreshold = dataAnalyzer!!.calculateAccuracyFromBarReading(
+                                accuracyThSeekbarValue, 1000)
+                            val points = dataAnalyzer!!.getRemainingLocations(accuracyThreshold)
+                            polylines[3]?.setPoints(points)
+                            val length = dataAnalyzer!!.getLengthOfRoute(points)
+                            lengthListings.add("3: $length m")
+                        }
+
+                    }
+
                 }
                 map?.overlayManager?.add(polylines[i])
             }
             map?.invalidate()
         }
+        var lengthtext = ""
+        for((index,l) in lengthListings.withIndex()){
+            lengthtext += l
+            if(index<lengthListings.size-1){
+                lengthtext+=", "
+            }
+        }
+        lengths_listing_view.text=lengthtext
     }
 
 

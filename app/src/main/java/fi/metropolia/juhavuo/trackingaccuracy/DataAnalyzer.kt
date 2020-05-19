@@ -144,13 +144,15 @@ class DataAnalyzer(val id: Int, val context: Context) {
             measuredLocations[0].accuracy,
             measuredLocations[0].timestamp
         )
-        for(index in 1 until measuredLocations.size){
-            kalmanFilter.process(measuredLocations[index].latitude
-            ,measuredLocations[index].longitude
-            ,measuredLocations[index].accuracy
-            ,measuredLocations[index].timestamp)
+        for (index in 1 until measuredLocations.size) {
+            kalmanFilter.process(
+                measuredLocations[index].latitude
+                , measuredLocations[index].longitude
+                , measuredLocations[index].accuracy
+                , measuredLocations[index].timestamp
+            )
 
-            kalmanGeoPoints.add(GeoPoint(kalmanFilter.lat,kalmanFilter.lng))
+            kalmanGeoPoints.add(GeoPoint(kalmanFilter.lat, kalmanFilter.lng))
         }
 
         return kalmanGeoPoints
@@ -162,22 +164,22 @@ class DataAnalyzer(val id: Int, val context: Context) {
         The extremes are returned as array, in which: index 0: smallest, index 1: biggest
      */
     fun getAccuracyExtremes(): FloatArray {
-        if(measuredLocations.size==0){
-            return floatArrayOf(0f,0f)
-        }else if(measuredLocations.size ==1) {
-            return floatArrayOf(measuredLocations[0].accuracy,measuredLocations[0].accuracy)
-        }else {
+        if (measuredLocations.size == 0) {
+            return floatArrayOf(0f, 0f)
+        } else if (measuredLocations.size == 1) {
+            return floatArrayOf(measuredLocations[0].accuracy, measuredLocations[0].accuracy)
+        } else {
             val accuracies = getAccuracies()
             accuracies.sort()
-            return floatArrayOf(accuracies[0],accuracies.last())
+            return floatArrayOf(accuracies[0], accuracies.last())
         }
     }
 
-    fun getAmountOfPointsToBeRemoved(threshold_accuracy: Float): Int{
+    fun getAmountOfPointsToBeRemoved(threshold_accuracy: Float): Int {
         val accuracies = getAccuracies()
         var count = 0
-        for(accuracy in accuracies){
-            if(accuracy> threshold_accuracy){
+        for (accuracy in accuracies) {
+            if (accuracy > threshold_accuracy) {
                 ++count
             }
         }
@@ -185,17 +187,19 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return count
     }
 
-    fun getDistances(): ArrayList<Float>{
+    fun getDistances(): ArrayList<Float> {
 
         val distances: ArrayList<Float> = ArrayList()
-        if(measuredLocations.size>0){
+        if (measuredLocations.size > 0) {
             distances.add(0f)
         }
-        if(measuredLocations.size>1){
+        if (measuredLocations.size > 1) {
             var results: FloatArray = FloatArray(1)
-            for(index in 1 until measuredLocations.size){
-                Location.distanceBetween(measuredLocations[index-1].latitude,measuredLocations[index-1].longitude,
-                measuredLocations[index].latitude,measuredLocations[index].longitude,results)
+            for (index in 1 until measuredLocations.size) {
+                Location.distanceBetween(
+                    measuredLocations[index - 1].latitude, measuredLocations[index - 1].longitude,
+                    measuredLocations[index].latitude, measuredLocations[index].longitude, results
+                )
                 distances.add(results[0])
             }
         }
@@ -203,42 +207,81 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return distances
     }
 
-    fun getTravelledDistances(): ArrayList<Float>{
+    fun getDistances(gPoints: ArrayList<GeoPoint>): ArrayList<Float> {
+        val distances: ArrayList<Float> = ArrayList()
+        if (gPoints.size > 0) {
+            distances.add(0f)
+        }
+        if (gPoints.size > 1) {
+            var results: FloatArray = FloatArray(1)
+            for (index in 1 until gPoints.size) {
+                Location.distanceBetween(
+                    gPoints[index - 1].latitude, gPoints[index - 1].longitude,
+                    gPoints[index].latitude, gPoints[index].longitude, results
+                )
+                distances.add(results[0])
+            }
+
+        }
+        return distances
+    }
+
+    fun getCumulativeDistances(): ArrayList<Float> {
         val distances = getDistances()
         val travelledDistances: ArrayList<Float> = ArrayList()
         var travelled = 0f
-        for(d in distances){
+        for (d in distances) {
             travelled += d
             travelledDistances.add(travelled)
         }
         return travelledDistances
     }
 
-    fun getTimes(): ArrayList<Double>{
+    fun getCumulativeDistances(gPoints: ArrayList<GeoPoint>): ArrayList<Float> {
+        val distances = getDistances(gPoints)
+        val travelledDistances: ArrayList<Float> = ArrayList()
+        var travelled = 0f
+        for (d in distances) {
+            travelled += d
+            travelledDistances.add(travelled)
+        }
+        return travelledDistances
+    }
+
+    fun getLengthOfRoute(gPoints: ArrayList<GeoPoint>): Float{
+        var lengthOfRoute = 0f
+        var distances = getDistances(gPoints)
+        for(d in distances){
+            lengthOfRoute += d
+        }
+        return lengthOfRoute
+    }
+
+    fun getTimes(): ArrayList<Double> {
         val timeIntervals: ArrayList<Double> = ArrayList()
-        if(measuredLocations.size>0){
+        if (measuredLocations.size > 0) {
             timeIntervals.add(0.0)
         }
-        if(measuredLocations.size>1){
-            for(index in 1 until measuredLocations.size){
-                timeIntervals.add((measuredLocations[index].timestamp-measuredLocations[0].timestamp)/1000.0)
+        if (measuredLocations.size > 1) {
+            for (index in 1 until measuredLocations.size) {
+                timeIntervals.add((measuredLocations[index].timestamp - measuredLocations[0].timestamp) / 1000.0)
             }
         }
 
         return timeIntervals
     }
 
-    fun getAltitudes(): ArrayList<Double>{
+    fun getAltitudes(): ArrayList<Double> {
         val altitudes: ArrayList<Double> = ArrayList()
-        for(ml in measuredLocations){
+        for (ml in measuredLocations) {
             altitudes.add(ml.altitude)
         }
         return altitudes
     }
 
-    fun getSpeeds(): ArrayList<Float>{
+    fun getSpeeds(): ArrayList<Float> {
         val speeds: ArrayList<Float> = ArrayList()
-        for(ml in measuredLocations){
+        for (ml in measuredLocations) {
             speeds.add(ml.speed)
         }
         return speeds
@@ -249,23 +292,23 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return (extremes[1] - extremes[0]) * s / sMax + extremes[0]
     }
 
-    private fun calculateBarReadingFromAccuracy(a: Float, sMax: Int): Int{
+    private fun calculateBarReadingFromAccuracy(a: Float, sMax: Int): Int {
         val extremes = getAccuracyExtremes()
-        return (sMax*(a-extremes[0])/(extremes[1]-extremes[0])).toInt()
+        return (sMax * (a - extremes[0]) / (extremes[1] - extremes[0])).toInt()
     }
 
-    fun getRemainingLocations(threshold_accuracy: Float): ArrayList<GeoPoint>{
+    fun getRemainingLocations(threshold_accuracy: Float): ArrayList<GeoPoint> {
         val geoPoints: ArrayList<GeoPoint> = ArrayList()
-        for(mlocation in measuredLocations){
-            if(mlocation.accuracy <= threshold_accuracy){
-                geoPoints.add(GeoPoint(mlocation.latitude,mlocation.longitude))
+        for (mlocation in measuredLocations) {
+            if (mlocation.accuracy <= threshold_accuracy) {
+                geoPoints.add(GeoPoint(mlocation.latitude, mlocation.longitude))
             }
         }
 
         return geoPoints
     }
 
-    private fun getLocationsOrganizedByAccuracy(): ArrayList<MeasuredLocation>{
+    private fun getLocationsOrganizedByAccuracy(): ArrayList<MeasuredLocation> {
         val cloneOfMeasuredLocations = measuredLocations.clone() as ArrayList<MeasuredLocation>
         cloneOfMeasuredLocations.sortWith(Comparator { p0, p1 ->
             when {

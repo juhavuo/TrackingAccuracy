@@ -35,7 +35,7 @@ class GraphFragment: Fragment(){
         plot = view.findViewById(R.id.graph_fragment_plot)
 
         if(dataAnalyzer != null){
-            distances = dataAnalyzer!!.getTravelledDistances()
+            distances = dataAnalyzer!!.getCumulativeDistances()
             timeIntervals = dataAnalyzer!!.getTimes()
             altitudes = dataAnalyzer!!.getAltitudes()
             speeds = dataAnalyzer!!.getSpeeds()
@@ -59,7 +59,6 @@ class GraphFragment: Fragment(){
             }
 
         }
-
 
         return view
     }
