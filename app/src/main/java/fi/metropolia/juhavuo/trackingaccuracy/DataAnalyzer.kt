@@ -1,6 +1,7 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
 import android.content.Context
+import android.location.Location
 import android.util.Log
 import org.osmdroid.util.GeoPoint
 import kotlin.math.hypot
@@ -184,6 +185,54 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return count
     }
 
+    fun getDistances(): ArrayList<Float>{
+
+        val distances: ArrayList<Float> = ArrayList()
+        if(measuredLocations.size>0){
+            distances.add(0f)
+        }
+        if(measuredLocations.size>1){
+            var results: FloatArray = FloatArray(1)
+            for(index in 1 until measuredLocations.size){
+                Location.distanceBetween(measuredLocations[index-1].latitude,measuredLocations[index-1].longitude,
+                measuredLocations[index].latitude,measuredLocations[index].longitude,results)
+                distances.add(results[0])
+            }
+        }
+
+        return distances
+    }
+
+    fun getTimeIntervals(): ArrayList<Double>{
+        val timeIntervals: ArrayList<Double> = ArrayList()
+        if(measuredLocations.size>0){
+            timeIntervals.add(0.0)
+        }
+        if(measuredLocations.size>1){
+            for(index in 1 until measuredLocations.size){
+                timeIntervals.add((measuredLocations[index].timestamp-measuredLocations[index-1].timestamp)/1000.0)
+            }
+        }
+
+        return timeIntervals
+    }
+
+    fun getAltitudes(): ArrayList<Double>{
+        val altitudes: ArrayList<Double> = ArrayList()
+        for(ml in measuredLocations){
+            altitudes.add(ml.altitude)
+        }
+        return altitudes
+    }
+
+    fun getSpeeds(): ArrayList<Float>{
+        val speeds: ArrayList<Float> = ArrayList()
+        for(ml in measuredLocations){
+            speeds.add(ml.speed)
+        }
+        return speeds
+    }
+
     fun calculateAccuracyFromBarReading(s: Int, sMax: Int): Float {
         val extremes = getAccuracyExtremes()
         return (extremes[1] - extremes[0]) * s / sMax + extremes[0]
@@ -217,5 +266,6 @@ class DataAnalyzer(val id: Int, val context: Context) {
 
         return cloneOfMeasuredLocations
     }
+
 
 }

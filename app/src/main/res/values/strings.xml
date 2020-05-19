@@ -44,4 +44,10 @@
     <string name="numerical_fragment_accuracy_title">acc(m)</string>
     <string name="numerical_fragment_altitude_title">alt(m)</string>
     <string name="numerical_fragment_speed_title">spd(m/s)</string>
+    <string name="graph_fragment_title">Select graph to show:</string>
+    <string-array name="graph_option_listing_spinner_array">
+        <item>time-distance</item>
+        <item>time-speed</item>
+        <item>distance-altitude</item>
+    </string-array>
 </resources>
