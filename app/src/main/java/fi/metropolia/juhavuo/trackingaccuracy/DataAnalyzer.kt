@@ -203,14 +203,25 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return distances
     }
 
-    fun getTimeIntervals(): ArrayList<Double>{
+    fun getTravelledDistances(): ArrayList<Float>{
+        val distances = getDistances()
+        val travelledDistances: ArrayList<Float> = ArrayList()
+        var travelled = 0f
+        for(d in distances){
+            travelled += d
+            travelledDistances.add(travelled)
+        }
+        return travelledDistances
+    }
+
+    fun getTimes(): ArrayList<Double>{
         val timeIntervals: ArrayList<Double> = ArrayList()
         if(measuredLocations.size>0){
             timeIntervals.add(0.0)
         }
         if(measuredLocations.size>1){
             for(index in 1 until measuredLocations.size){
-                timeIntervals.add((measuredLocations[index].timestamp-measuredLocations[index-1].timestamp)/1000.0)
+                timeIntervals.add((measuredLocations[index].timestamp-measuredLocations[0].timestamp)/1000.0)
             }
         }
 

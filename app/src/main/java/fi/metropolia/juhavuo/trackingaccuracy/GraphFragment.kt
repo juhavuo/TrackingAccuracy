@@ -35,8 +35,8 @@ class GraphFragment: Fragment(){
         plot = view.findViewById(R.id.graph_fragment_plot)
 
         if(dataAnalyzer != null){
-            distances = dataAnalyzer!!.getDistances()
-            timeIntervals = dataAnalyzer!!.getTimeIntervals()
+            distances = dataAnalyzer!!.getTravelledDistances()
+            timeIntervals = dataAnalyzer!!.getTimes()
             altitudes = dataAnalyzer!!.getAltitudes()
             speeds = dataAnalyzer!!.getSpeeds()
         }
@@ -70,6 +70,7 @@ class GraphFragment: Fragment(){
         val series = SimpleXYSeries(xValues,yValues,description)
         val lineAndPointFormatter = LineAndPointFormatter(context,R.xml.line_point_formatter)
         plot.addSeries(series,lineAndPointFormatter)
+        plot.redraw()
 
     }
 
