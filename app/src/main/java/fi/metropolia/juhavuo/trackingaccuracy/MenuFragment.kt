@@ -39,6 +39,12 @@ class MenuFragment: Fragment(){
             mapPreferencesHandler.storeAccuracyPreference(isChecked)
         }
 
+        val bearingsCheckBox = view.findViewById<CheckBox>(R.id.menu_fragment_bearings_checkbox)
+        bearingsCheckBox.isChecked = mapPreferencesHandler.getBearingsPreference()
+        bearingsCheckBox.setOnCheckedChangeListener{_, isChecked ->
+            mapPreferencesHandler.storeBearingsPreference(isChecked)
+        }
+
         val showMeasuredCheckBox = view.findViewById<CheckBox>(R.id.menu_fragment_show_measured_checkbox)
         showMeasuredCheckBox.isChecked = mapPreferencesHandler.getAlgorithmPreference(0)
         showMeasuredCheckBox.setOnCheckedChangeListener { _, isChecked ->

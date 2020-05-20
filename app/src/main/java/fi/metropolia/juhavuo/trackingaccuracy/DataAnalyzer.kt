@@ -45,14 +45,18 @@ class DataAnalyzer(val id: Int, val context: Context) {
     fun getAccuracies(): ArrayList<Float> {
         val accuracies: ArrayList<Float> = ArrayList()
         for (location in measuredLocations) {
-            if (location.accuracy == null) {
-                accuracies.add(0.0f)
-            } else {
-                accuracies.add(location.accuracy)
-            }
+            accuracies.add(location.accuracy)
         }
 
         return accuracies
+    }
+
+    fun getBearings(): ArrayList<Float> {
+        val bearings: ArrayList<Float> = ArrayList()
+        for(location in measuredLocations){
+            bearings.add(location.bearing)
+        }
+        return bearings
     }
 
     //ttps://rosettacode.org/wiki/Ramer-Douglas-Peucker_line_simplification#Kotlin

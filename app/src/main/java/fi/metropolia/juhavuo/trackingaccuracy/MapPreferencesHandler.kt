@@ -7,6 +7,7 @@ class MapPreferencesHandler(context: Context){
     private val sharedPreferences = context.getSharedPreferences("map_preferences",Context.MODE_PRIVATE)
     private val editor = sharedPreferences.edit()
     private val accuraciesPrference = "accuracy"
+    private val bearingsPreference = "bearing"
     private val showLinesPreference = "showlines"
     private val algorithmPreferences = arrayOf("measured","algorithm1","algorithm2","algorithm3")
     private val epsilonPreference = "epsilon" //this would be better in database
@@ -18,6 +19,10 @@ class MapPreferencesHandler(context: Context){
         editor.apply()
     }
 
+    fun storeBearingsPreference(showBearings: Boolean){
+        editor.putBoolean(bearingsPreference,showBearings)
+        editor.apply()
+    }
 
     fun storeAlgorithmPreference(index: Int, value: Boolean){
         if(checkArrayIndex(index)){
@@ -46,7 +51,7 @@ class MapPreferencesHandler(context: Context){
 
     fun getAccuracyPreference(): Boolean = sharedPreferences.getBoolean(accuraciesPrference,true)
 
-    fun getShowLinesPreference(): Boolean = sharedPreferences.getBoolean(showLinesPreference,true)
+    fun getBearingsPreference(): Boolean = sharedPreferences.getBoolean(bearingsPreference,false)
 
     fun getAmoutOfAlgorithmPreferences(): Int = algorithmPreferences.size
 

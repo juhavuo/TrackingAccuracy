@@ -32,6 +32,7 @@
     <string name="map_fragment_lenths_listed">No routes selected</string>
     <string name="menu_fragment_title">Viewing options for map</string>
     <string name="menu_fragment_checkbox_accuracies">Show accuracies:</string>
+    <string name="menu_fragment_checkbox_bearings">Show bearings:</string>
     <string name="menu_fragment_show_measured">0: Show measured locations:</string>
     <string name="menu_fragment_algorithm_title">Show calculated locations using:</string>
     <string name="menu_fragment_algorithm_1"> 1: Ramer-Douglas-Pecker</string>

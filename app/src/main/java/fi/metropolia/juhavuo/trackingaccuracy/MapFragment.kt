@@ -115,6 +115,9 @@ class MapFragment : Fragment() {
                 if (mapPreferencesHandler.getAccuracyPreference()) {
                     constructPolygons(geoPoints, dataAnalyzer!!.getAccuracies())
                 }
+                if (mapPreferencesHandler.getBearingsPreference()){
+                    drawBearings(geoPoints, dataAnalyzer!!.getBearings(),0.0003f)
+                }
                 drawPaths()
 
             }
@@ -250,6 +253,21 @@ class MapFragment : Fragment() {
             }
         }
         lengths_listing_view.text=lengthtext
+    }
+
+    private fun drawBearings(gpoints: ArrayList<GeoPoint>, bearings: ArrayList<Float>, r: Float){
+
+        for ((index,gp) in gpoints.withIndex()){
+            val linePoints: ArrayList<GeoPoint> = ArrayList()
+            linePoints.add(gp)
+            val latitude = gp.latitude+(r* cos(bearings[index])).toDouble()
+            val longitude = gp.longitude+(r* sin(bearings[index])).toDouble()
+            linePoints.add(GeoPoint(latitude,longitude))
+            val polyline = Polyline()
+            polyline.outlinePaint.color = resources.getColor(R.color.colorAccent,null)
+            polyline.setPoints(linePoints)
+            map?.overlayManager?.add(polyline)
+        }
     }
 
 
