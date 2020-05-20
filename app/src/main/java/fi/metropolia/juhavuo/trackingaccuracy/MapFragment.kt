@@ -260,8 +260,8 @@ class MapFragment : Fragment() {
         for ((index,gp) in gpoints.withIndex()){
             val linePoints: ArrayList<GeoPoint> = ArrayList()
             linePoints.add(gp)
-            val latitude = gp.latitude+(r* cos(bearings[index])).toDouble()
-            val longitude = gp.longitude+(r* sin(bearings[index])).toDouble()
+            val latitude = gp.latitude+r* cos(bearings[index]*PI/180.0)
+            val longitude = gp.longitude+r* sin(bearings[index]*PI/180.0)
             linePoints.add(GeoPoint(latitude,longitude))
             val polyline = Polyline()
             polyline.outlinePaint.color = resources.getColor(R.color.colorAccent,null)
