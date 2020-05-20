@@ -22,6 +22,8 @@ data class MeasuredLocation(
    val altitude: Double,
    val speed: Float,
    val accuracy: Float,
+   val bearing: Float,
+   val bearingAccuracy: Float,
    val timestamp: Long
 ){
    override fun toString(): String = "measured location: lat $latitude, lng $longitude, alt $altitude, speed: $speed, acc $accuracy, timestamp $timestamp"

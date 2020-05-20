@@ -14,8 +14,8 @@ class NumericalDataAdapter(var items: ArrayList<MeasuredLocation>, val context: 
         val lat_textview = v.numerical_fragment_rv_row_latitude
         val lng_textview = v.numerical_fragment_rv_row_longitude
         val acc_textview = v.numerical_fragment_rv_row_accuracy
-        val alt_textview = v.numerical_fragment_rv_row_altitude
-        val spd_textview = v.numerical_fragment_rv_row_speed
+        val bea_textview = v.numerical_fragment_rv_row_bearing
+        val bea_acc_textview = v.numerical_fragment_rv_row_bearing_accuracy
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NumerericalDataHolder {
@@ -32,7 +32,7 @@ class NumericalDataAdapter(var items: ArrayList<MeasuredLocation>, val context: 
         holder.lat_textview.text = fourDecimal.format(items[position].latitude)
         holder.lng_textview.text = fourDecimal.format(items[position].longitude)
         holder.acc_textview.text = twoDecimal.format(items[position].accuracy)
-        holder.alt_textview.text = twoDecimal.format(items[position].altitude)
-        holder.spd_textview.text = twoDecimal.format(items[position].speed)
+        holder.bea_textview.text = twoDecimal.format(items[position].bearing)
+        holder.bea_acc_textview.text = twoDecimal.format(items[position].bearingAccuracy)
     }
 }

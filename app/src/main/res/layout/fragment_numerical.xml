@@ -52,16 +52,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:id="@+id/numerical_fragment_column_altitude_title"
-            android:text="@string/numerical_fragment_altitude_title"
+            android:id="@+id/numerical_fragment_column_bearing_title"
+            android:text="@string/numerical_fragment_bearing_title"
             android:textAlignment="center"
             android:background="@drawable/border_for_numerical_fragment_cell_title"/>
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:id="@+id/numerical_fragment_column_speed_title"
-            android:text="@string/numerical_fragment_speed_title"
+            android:id="@+id/numerical_fragment_column_bearing_accuracy_title"
+            android:text="@string/numerical_fragment_bearing_accuracy_title"
             android:textAlignment="center"
             android:background="@drawable/border_for_numerical_fragment_cell_title"/>
     </LinearLayout>
