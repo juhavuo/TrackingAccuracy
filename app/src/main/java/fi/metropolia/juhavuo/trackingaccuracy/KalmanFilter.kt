@@ -4,7 +4,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 
-//https://stackoverflow.com/questions/1134579/smooth-gps-data, Stochastically's aswer
+//https://stackoverflow.com/questions/1134579/smooth-gps-data, Stochastically's aswer (in Java)
 class KalmanFilter(speed: Float){
 
     private val minAccuracy = 1f

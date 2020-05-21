@@ -92,8 +92,10 @@ class DataAnalyzer(val id: Int, val context: Context) {
         pointList: List<MeasuredLocation>,
         epsilon: Double,
         out: MutableList<MeasuredLocation>
-    ) {
-        if (pointList.size < 2) throw IllegalArgumentException("Not enough points to simplify")
+    ): Boolean {
+        if (pointList.size < 2){
+            return false
+        }
 
         // Find the point with the maximum distance from line between start and end
         var dmax = 0.0
@@ -118,13 +120,17 @@ class DataAnalyzer(val id: Int, val context: Context) {
             // build the result list
             out.addAll(recResults1.take(recResults1.size - 1))
             out.addAll(recResults2)
-            if (out.size < 2) throw RuntimeException("Problem assembling output")
+            if (out.size < 2){
+                return false
+            }
         } else {
             // Just return start and end points
             out.clear()
             out.add(pointList.first())
             out.add(pointList.last())
         }
+
+        return true
     }
 
     /**
@@ -132,15 +138,23 @@ class DataAnalyzer(val id: Int, val context: Context) {
      */
     fun getAlgorithm1GeoPoints(epsilon: Double): ArrayList<GeoPoint> {
         val locations: ArrayList<MeasuredLocation> = ArrayList()
-        ramerDouglasPeucker(measuredLocations, epsilon, locations)
+        val success = ramerDouglasPeucker(measuredLocations, epsilon, locations)
+        if(!success) {
+            locations.clear()
+        }
         return getMeasuredLocationsAsGeoPoints(locations)
+
     }
 
     fun getKalmanFilteredGeoPoints(): ArrayList<GeoPoint> {
         val kalmanGeoPoints: ArrayList<GeoPoint> = ArrayList()
-        val kalmanFilter = KalmanFilter(3f)
+        var speed = getSpeedMeanValue()
+        speed *= 1.2f //this can be changed, for better values
+        if(speed<3f){
+            speed = 3f
+        }
 
-
+        val kalmanFilter = KalmanFilter(speed)
 
         kalmanFilter.setState(
             measuredLocations[0].latitude,
@@ -161,6 +175,15 @@ class DataAnalyzer(val id: Int, val context: Context) {
 
         return kalmanGeoPoints
 
+    }
+
+    private fun getSpeedMeanValue(): Float{
+        var speed = 0f
+        for(ml in measuredLocations){
+            speed += ml.speed
+        }
+
+        return speed/measuredLocations.size
     }
 
     /*
@@ -190,6 +213,36 @@ class DataAnalyzer(val id: Int, val context: Context) {
 
         return count
     }
+
+    fun getMovingAverages(amount: Int): ArrayList<GeoPoint>{
+        val latitudes = measuredLocations.map { it.latitude }
+        val longitudes = measuredLocations.map { it.longitude }
+        val latitudeAverages = movingAverage(latitudes,amount)
+        val longitudeAverages = movingAverage(longitudes,amount)
+
+        val geoPoints: ArrayList<GeoPoint> = ArrayList()
+        for(index in 0 until latitudeAverages.size){
+            geoPoints.add(GeoPoint(latitudeAverages[index],longitudeAverages[index]))
+        }
+
+        return geoPoints
+    }
+
+    private fun movingAverage(list: List<Double>,a: Int): ArrayList<Double>{
+        val averages: ArrayList<Double> = ArrayList()
+        var amount = a
+        if(amount<2){
+            amount = 2
+        }
+        for(index in amount until list.size){
+            averages.add(list.subList(index-amount,index).average())
+        }
+        return averages
+    }
+
+
+
+
 
     fun getDistances(): ArrayList<Float> {
 
