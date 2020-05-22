@@ -218,8 +218,8 @@ class DataAnalyzer(val id: Int, val context: Context) {
         var a = amount
         if(a<2){
             a=2
-        }else if(a>5){
-            a=5
+        }else if(a>10){
+            a=10
         }
         val latitudes = measuredLocations.map { it.latitude }
         val longitudes = measuredLocations.map { it.longitude }

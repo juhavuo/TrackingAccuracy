@@ -55,6 +55,7 @@ class MenuFragment: Fragment(){
         algorithmCheckBoxes.add(view.findViewById(R.id.menu_fragment_algorithm_1_checkbox))
         algorithmCheckBoxes.add(view.findViewById(R.id.menu_fragment_algorithm_2_checkbox))
         algorithmCheckBoxes.add(view.findViewById(R.id.menu_fragment_algorithm_3_checkbox))
+        algorithmCheckBoxes.add(view.findViewById(R.id.menu_fragment_algorithm_4_checkbox))
         for((index, aCheckBox) in algorithmCheckBoxes.withIndex()){
             aCheckBox.isChecked = mapPreferencesHandler.getAlgorithmPreference(index+1)
             aCheckBox.setOnCheckedChangeListener{_, isCheked ->

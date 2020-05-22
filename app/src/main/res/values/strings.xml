@@ -42,7 +42,7 @@
     <string name="menu_fragment_accuracy_threshold_textview">Accuracy threshold</string>
     <string name="menu_fragment_locations_removed_textview">%1$d/%2$d of locations removed</string>
     <string name="menu_fragment_algorithm_4">4: Running averages</string>
-    <string name="menu_fragment_algorithm_4_instructions">Average of locations (2–5)</string>
+    <string name="menu_fragment_algorithm_4_instructions">Average of locations (2–10)</string>
     <string name="name_fragment_algorithm_4_hint">number</string>
     <string name="numerical_fragment_title">Numerical data of route</string>
     <string name="numerical_fragment_latitude_title">lat</string>
