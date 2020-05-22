@@ -2,14 +2,14 @@ package fi.metropolia.juhavuo.trackingaccuracy
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.ImageButton
-import android.widget.SeekBar
-import android.widget.TextView
+import android.view.inputmethod.EditorInfo
+import android.widget.*
 import androidx.fragment.app.Fragment
+import java.lang.NumberFormatException
 
 class MenuFragment: Fragment(){
 
@@ -111,7 +111,7 @@ class MenuFragment: Fragment(){
                         accuracyThresholdTextView.text = accuracyThreshold.toString()
                         pointsToRemoved = dataAnalyzer!!.getAmountOfPointsToBeRemoved(accuracyThreshold)
                         locationsRemovedTextView.text = resources.getString(R.string.menu_fragment_locations_removed_textview,pointsToRemoved,amountOfLocations)
-                        mapPreferencesHandler.storeAccuracyTresholdPreference(value)
+                        mapPreferencesHandler.storeAccuracyThresholdPreference(value)
                     }
                 }
             }
@@ -121,6 +121,20 @@ class MenuFragment: Fragment(){
             override fun onStopTrackingTouch(p0: SeekBar?) {}
 
         })
+
+        val algorithm4EditText = view.findViewById<EditText>(R.id.menu_fragment_algorithm4_edit_text)
+        algorithm4EditText.setOnEditorActionListener { view, actionId, event ->
+            if(actionId==EditorInfo.IME_ACTION_DONE){
+                try{
+                    val amount = algorithm4EditText.text.toString().toInt()
+                    mapPreferencesHandler.storeRunningMeanPreference(amount)
+                }catch (exception: NumberFormatException){
+                    Log.i("textedit","$exception")
+                }
+            }
+            false
+        }
+
 
         val closeButton = view.findViewById<ImageButton>(R.id.menu_fragment_close_button)
         closeButton.setOnClickListener {

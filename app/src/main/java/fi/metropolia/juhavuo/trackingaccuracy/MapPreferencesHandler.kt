@@ -6,16 +6,16 @@ class MapPreferencesHandler(context: Context){
 
     private val sharedPreferences = context.getSharedPreferences("map_preferences",Context.MODE_PRIVATE)
     private val editor = sharedPreferences.edit()
-    private val accuraciesPrference = "accuracy"
+    private val accuraciesPreference = "accuracy"
     private val bearingsPreference = "bearing"
-    private val showLinesPreference = "showlines"
-    private val algorithmPreferences = arrayOf("measured","algorithm1","algorithm2","algorithm3")
+    private val algorithmPreferences = arrayOf("measured","algorithm1","algorithm2","algorithm3","algorithm4")
     private val epsilonPreference = "epsilon" //this would be better in database
     private val mapZoomPreference = "mapzoom"
     private val accuracyThresholdPreference = "accuracythreshold" //this would be better in database
+    private val runningMeanPreference = "runningmean"
 
     fun storeAccuracyPreference(showAccuracies: Boolean){
-        editor.putBoolean(accuraciesPrference,showAccuracies)
+        editor.putBoolean(accuraciesPreference,showAccuracies)
         editor.apply()
     }
 
@@ -44,12 +44,17 @@ class MapPreferencesHandler(context: Context){
     }
 
 
-    fun storeAccuracyTresholdPreference(accuracyThreshold: Int){
+    fun storeAccuracyThresholdPreference(accuracyThreshold: Int){
         editor.putInt(accuracyThresholdPreference, accuracyThreshold)
         editor.apply()
     }
 
-    fun getAccuracyPreference(): Boolean = sharedPreferences.getBoolean(accuraciesPrference,true)
+    fun storeRunningMeanPreference(amount: Int){
+        editor.putInt(runningMeanPreference,amount)
+        editor.apply()
+    }
+
+    fun getAccuracyPreference(): Boolean = sharedPreferences.getBoolean(accuraciesPreference,true)
 
     fun getBearingsPreference(): Boolean = sharedPreferences.getBoolean(bearingsPreference,false)
 
@@ -78,6 +83,8 @@ class MapPreferencesHandler(context: Context){
     }
 
     fun getAccuracyThresholdPreference(): Int = sharedPreferences.getInt(accuracyThresholdPreference,1000)
+
+    fun getRunningMeanPreference(): Int = sharedPreferences.getInt(runningMeanPreference,3)
 
     private fun checkArrayIndex(index: Int): Boolean = (index >= 0 || index < algorithmPreferences.size)
 

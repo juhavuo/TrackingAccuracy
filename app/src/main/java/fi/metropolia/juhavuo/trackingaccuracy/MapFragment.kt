@@ -237,7 +237,17 @@ class MapFragment : Fragment() {
                             val length = dataAnalyzer!!.getLengthOfRoute(points)
                             lengthListings.add("3: $length m")
                         }
-
+                    }
+                    4 -> {
+                        polylines[4]?.outlinePaint?.color =
+                            resources.getColor(R.color.colorAlgorithm4Polyline,null)
+                        val amountOfPoints = mapPreferencesHandler.getRunningMeanPreference()
+                        if(dataAnalyzer!=null){
+                            val points = dataAnalyzer!!.getMovingAverages(amountOfPoints)
+                            polylines[4]?.setPoints(points)
+                            val length = dataAnalyzer!!.getLengthOfRoute(points)
+                            lengthListings.add("4: $length m")
+                        }
                     }
 
                 }

@@ -215,11 +215,16 @@ class DataAnalyzer(val id: Int, val context: Context) {
     }
 
     fun getMovingAverages(amount: Int): ArrayList<GeoPoint>{
+        var a = amount
+        if(a<2){
+            a=2
+        }else if(a>5){
+            a=5
+        }
         val latitudes = measuredLocations.map { it.latitude }
         val longitudes = measuredLocations.map { it.longitude }
-        val latitudeAverages = movingAverage(latitudes,amount)
-        val longitudeAverages = movingAverage(longitudes,amount)
-
+        val latitudeAverages = movingAverage(latitudes,a)
+        val longitudeAverages = movingAverage(longitudes,a)
         val geoPoints: ArrayList<GeoPoint> = ArrayList()
         for(index in 0 until latitudeAverages.size){
             geoPoints.add(GeoPoint(latitudeAverages[index],longitudeAverages[index]))
@@ -228,12 +233,8 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return geoPoints
     }
 
-    private fun movingAverage(list: List<Double>,a: Int): ArrayList<Double>{
+    private fun movingAverage(list: List<Double>,amount: Int): ArrayList<Double>{
         val averages: ArrayList<Double> = ArrayList()
-        var amount = a
-        if(amount<2){
-            amount = 2
-        }
         for(index in amount until list.size){
             averages.add(list.subList(index-amount,index).average())
         }
