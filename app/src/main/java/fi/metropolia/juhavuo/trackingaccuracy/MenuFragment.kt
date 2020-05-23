@@ -136,6 +136,11 @@ class MenuFragment: Fragment(){
             false
         }
 
+        val useWeightsCheckBox = view.findViewById<CheckBox>(R.id.menu_fragment_include_weights_checkbox)
+        useWeightsCheckBox.isChecked = mapPreferencesHandler.getUseWeightsPreference()
+        useWeightsCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            mapPreferencesHandler.storeUseWeightsPreference(isChecked)
+        }
 
         val closeButton = view.findViewById<ImageButton>(R.id.menu_fragment_close_button)
         closeButton.setOnClickListener {

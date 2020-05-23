@@ -210,6 +210,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:max="1000"
+            android:layout_margin="20dp"
             app:layout_constraintTop_toBottomOf="@id/menu_fragment_accuracy_threshold_textview" />
 
         <TextView
@@ -257,9 +258,18 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:id="@+id/menu_fragment_algorithm4_edit_text"
-            android:hint="@string/name_fragment_algorithm_4_hint"
+            android:hint="@string/menu_fragment_algorithm_4_hint"
             app:layout_constraintTop_toBottomOf="@id/menu_fragment_algorithm4_linear_layout"
             app:layout_constraintStart_toEndOf="@id/menu_fragment_guideline"
+            app:layout_constraintEnd_toEndOf="parent"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/menu_fragment_include_weights_checkbox"
+            android:text="@string/menu_fragment_use_weights_checkbox"
+            android:layout_margin="20dp"
+            app:layout_constraintTop_toBottomOf="@id/menu_fragment_algorithm4_edit_text"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

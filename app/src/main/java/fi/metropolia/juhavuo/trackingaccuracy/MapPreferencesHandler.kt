@@ -13,6 +13,7 @@ class MapPreferencesHandler(context: Context){
     private val mapZoomPreference = "mapzoom"
     private val accuracyThresholdPreference = "accuracythreshold" //this would be better in database
     private val runningMeanPreference = "runningmean"
+    private val useWeightsPreference = "useweights"
 
     fun storeAccuracyPreference(showAccuracies: Boolean){
         editor.putBoolean(accuraciesPreference,showAccuracies)
@@ -54,6 +55,11 @@ class MapPreferencesHandler(context: Context){
         editor.apply()
     }
 
+    fun storeUseWeightsPreference(value: Boolean){
+        editor.putBoolean(useWeightsPreference,value)
+        editor.apply()
+    }
+
     fun getAccuracyPreference(): Boolean = sharedPreferences.getBoolean(accuraciesPreference,true)
 
     fun getBearingsPreference(): Boolean = sharedPreferences.getBoolean(bearingsPreference,false)
@@ -85,6 +91,8 @@ class MapPreferencesHandler(context: Context){
     fun getAccuracyThresholdPreference(): Int = sharedPreferences.getInt(accuracyThresholdPreference,1000)
 
     fun getRunningMeanPreference(): Int = sharedPreferences.getInt(runningMeanPreference,3)
+
+    fun getUseWeightsPreference(): Boolean = sharedPreferences.getBoolean(useWeightsPreference,false)
 
     private fun checkArrayIndex(index: Int): Boolean = (index >= 0 || index < algorithmPreferences.size)
 

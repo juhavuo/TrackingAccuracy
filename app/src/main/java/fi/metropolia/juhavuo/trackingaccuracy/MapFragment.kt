@@ -243,7 +243,7 @@ class MapFragment : Fragment() {
                             resources.getColor(R.color.colorAlgorithm4Polyline,null)
                         val amountOfPoints = mapPreferencesHandler.getRunningMeanPreference()
                         if(dataAnalyzer!=null){
-                            val points = dataAnalyzer!!.getMovingAverages(amountOfPoints)
+                            val points = dataAnalyzer!!.getMovingAverages(amountOfPoints,mapPreferencesHandler.getUseWeightsPreference())
                             polylines[4]?.setPoints(points)
                             val length = dataAnalyzer!!.getLengthOfRoute(points)
                             lengthListings.add("4: $length m")

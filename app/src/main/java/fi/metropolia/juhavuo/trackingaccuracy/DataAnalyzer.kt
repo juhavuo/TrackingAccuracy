@@ -53,7 +53,7 @@ class DataAnalyzer(val id: Int, val context: Context) {
 
     fun getBearings(): ArrayList<Float> {
         val bearings: ArrayList<Float> = ArrayList()
-        for(location in measuredLocations){
+        for (location in measuredLocations) {
             bearings.add(location.bearing)
         }
         return bearings
@@ -93,7 +93,7 @@ class DataAnalyzer(val id: Int, val context: Context) {
         epsilon: Double,
         out: MutableList<MeasuredLocation>
     ): Boolean {
-        if (pointList.size < 2){
+        if (pointList.size < 2) {
             return false
         }
 
@@ -120,7 +120,7 @@ class DataAnalyzer(val id: Int, val context: Context) {
             // build the result list
             out.addAll(recResults1.take(recResults1.size - 1))
             out.addAll(recResults2)
-            if (out.size < 2){
+            if (out.size < 2) {
                 return false
             }
         } else {
@@ -139,7 +139,7 @@ class DataAnalyzer(val id: Int, val context: Context) {
     fun getAlgorithm1GeoPoints(epsilon: Double): ArrayList<GeoPoint> {
         val locations: ArrayList<MeasuredLocation> = ArrayList()
         val success = ramerDouglasPeucker(measuredLocations, epsilon, locations)
-        if(!success) {
+        if (!success) {
             locations.clear()
         }
         return getMeasuredLocationsAsGeoPoints(locations)
@@ -150,7 +150,7 @@ class DataAnalyzer(val id: Int, val context: Context) {
         val kalmanGeoPoints: ArrayList<GeoPoint> = ArrayList()
         var speed = getSpeedMeanValue()
         speed *= 1.2f //this can be changed, for better values
-        if(speed<3f){
+        if (speed < 3f) {
             speed = 3f
         }
 
@@ -177,13 +177,13 @@ class DataAnalyzer(val id: Int, val context: Context) {
 
     }
 
-    private fun getSpeedMeanValue(): Float{
+    private fun getSpeedMeanValue(): Float {
         var speed = 0f
-        for(ml in measuredLocations){
+        for (ml in measuredLocations) {
             speed += ml.speed
         }
 
-        return speed/measuredLocations.size
+        return speed / measuredLocations.size
     }
 
     /*
@@ -214,35 +214,66 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return count
     }
 
-    fun getMovingAverages(amount: Int): ArrayList<GeoPoint>{
+    fun getMovingAverages(amount: Int, withWeights: Boolean): ArrayList<GeoPoint> {
         var a = amount
-        if(a<2){
-            a=2
-        }else if(a>10){
-            a=10
+        if (a < 2) {
+            a = 2
+        } else if (a > 10) {
+            a = 10
         }
         val latitudes = measuredLocations.map { it.latitude }
         val longitudes = measuredLocations.map { it.longitude }
-        val latitudeAverages = movingAverage(latitudes,a)
-        val longitudeAverages = movingAverage(longitudes,a)
-        val geoPoints: ArrayList<GeoPoint> = ArrayList()
-        for(index in 0 until latitudeAverages.size){
-            geoPoints.add(GeoPoint(latitudeAverages[index],longitudeAverages[index]))
-        }
 
+        val geoPoints: ArrayList<GeoPoint> = ArrayList()
+        if (withWeights) {
+            val weights = measuredLocations.map {
+                if (it.accuracy != 0f) {
+                    1 / it.accuracy
+                } else {
+                    1f //rare occation, in this case no accuracy is obtained, so standard weight is used
+                }
+            }
+            val latitudeAverages = movingAverageWithWeigths(latitudes,a,weights)
+            val longitudeAverages = movingAverageWithWeigths(longitudes,a,weights)
+            for(index in 0 until latitudeAverages.size){
+                geoPoints.add(GeoPoint(latitudeAverages[index],longitudeAverages[index]))
+            }
+        } else {
+            val latitudeAverages = movingAverage(latitudes, a)
+            val longitudeAverages = movingAverage(longitudes, a)
+            for (index in 0 until latitudeAverages.size) {
+                geoPoints.add(GeoPoint(latitudeAverages[index], longitudeAverages[index]))
+            }
+        }
         return geoPoints
     }
 
-    private fun movingAverage(list: List<Double>,amount: Int): ArrayList<Double>{
+    private fun movingAverage(list: List<Double>, amount: Int): ArrayList<Double> {
         val averages: ArrayList<Double> = ArrayList()
-        for(index in amount until list.size){
-            averages.add(list.subList(index-amount,index).average())
+        for (index in amount..list.size) {
+            averages.add(list.subList(index - amount, index).average())
         }
         return averages
     }
 
+    private fun movingAverageWithWeigths(
+        list: List<Double>,
+        amount: Int,
+        weights: List<Float>
+    ): ArrayList<Double> {
+        val averages: ArrayList<Double> = ArrayList()
+        for (i in amount..list.size) {
+            var weighedSum: Double = 0.0
+            var sumOfWeights: Float = 0f
+            for (j in i - amount until i) {
+                weighedSum += weights[j] * list[j]
+                sumOfWeights += weights[j]
+            }
+            averages.add(weighedSum / sumOfWeights)
+        }
 
-
+        return averages
+    }
 
 
     fun getDistances(): ArrayList<Float> {
@@ -306,10 +337,10 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return travelledDistances
     }
 
-    fun getLengthOfRoute(gPoints: ArrayList<GeoPoint>): Float{
+    fun getLengthOfRoute(gPoints: ArrayList<GeoPoint>): Float {
         var lengthOfRoute = 0f
         var distances = getDistances(gPoints)
-        for(d in distances){
+        for (d in distances) {
             lengthOfRoute += d
         }
         return lengthOfRoute
