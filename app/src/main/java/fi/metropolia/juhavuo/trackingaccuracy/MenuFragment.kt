@@ -65,13 +65,13 @@ class MenuFragment: Fragment(){
 
         val epsilonTextView = view.findViewById<TextView>(R.id.menu_fragment_epsilon_value)
         val epsilonSeekBar = view.findViewById<SeekBar>(R.id.menu_fragment_epsilon_seekbar)
-        val epsilonMultiplier = 10000.0
+        val epsilonMultiplier = 1000.0*2000
         val epsilonBegin = mapPreferencesHandler.getEpsilonPreference()
-        epsilonSeekBar.progress = (epsilonBegin*epsilonMultiplier*1000).toInt()
+        epsilonSeekBar.progress = (epsilonBegin*epsilonMultiplier).toInt()
         epsilonTextView.text = epsilonBegin.toString()
         epsilonSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val epsilon = progress/(epsilonMultiplier*1000)
+                val epsilon = progress/(epsilonMultiplier)
                 epsilonTextView.text = epsilon.toString()
                 mapPreferencesHandler.storeEpsilonPreference(epsilon)
             }

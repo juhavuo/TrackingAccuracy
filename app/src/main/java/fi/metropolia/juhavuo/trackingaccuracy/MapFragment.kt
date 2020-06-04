@@ -33,6 +33,7 @@ import kotlin.math.sin
 class MapFragment : Fragment() {
 
     private var map: MapView? = null
+    private var routeName: String? = null
     private lateinit var lengths_listing_view: TextView
     private var dataAnalyzer: DataAnalyzer? = null
     private var delegate: ShowMenuFragmentDelegate? = null
@@ -72,6 +73,9 @@ class MapFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_map, container, false)
         val title = view.findViewById<TextView>(R.id.map_fragment_title)
+        if(routeName!=null){
+            title.text = getString(R.string.map_fragment_title,routeName!!)
+        }
         lengths_listing_view = view.findViewById(R.id.map_fragment_lengths_listing_textview)
         map = view.findViewById<MapView>(R.id.map_fragment_map)
         map?.setTileSource(TileSourceFactory.MAPNIK)
@@ -96,8 +100,12 @@ class MapFragment : Fragment() {
         return view
     }
 
-    fun getDataAnalyzer(da: DataAnalyzer) {
+    fun setDataAnalyzer(da: DataAnalyzer) {
         dataAnalyzer = da
+    }
+
+    fun setRouteName(rName: String){
+        routeName = rName
     }
 
     override fun onStart() {

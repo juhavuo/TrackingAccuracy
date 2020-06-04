@@ -28,6 +28,7 @@
     <string name="data_viewing_bm_map_item">Map</string>
     <string name="data_viewing_bm_graph_item">Graphs</string>
     <string name="data_viewing_bm_numerical_item">Numerical</string>
+    <string name="map_fragment_title">Route name: %1$s</string>
     <string name="map_fragment_lengths_title">Lengths of shown paths:</string>
     <string name="map_fragment_lenths_listed">No routes selected</string>
     <string name="menu_fragment_title">Viewing options for map</string>
@@ -44,7 +45,7 @@
     <string name="menu_fragment_algorithm_4">4: Running averages</string>
     <string name="menu_fragment_algorithm_4_instructions">Average of locations (2–10)</string>
     <string name="menu_fragment_algorithm_4_hint">number</string>
-    <string name="menu_fragment_use_weights_checkbox">Use weights: </string>
+    <string name="menu_fragment_use_weights_checkbox">Use weights</string>
     <string name="numerical_fragment_title">Numerical data of route</string>
     <string name="numerical_fragment_latitude_title">lat</string>
     <string name="numerical_fragment_longitude_title">lng</string>

@@ -60,7 +60,7 @@ class LocationService: Service(){
         }
 
         locationRequest = LocationRequest()
-        locationRequest.interval = 20 * 1000 //20 seconds
+        locationRequest.interval = 10 * 1000 //10 seconds
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
         locationCallback = object: LocationCallback() {

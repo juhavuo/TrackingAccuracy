@@ -2,7 +2,6 @@ package fi.metropolia.juhavuo.trackingaccuracy
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import kotlinx.android.synthetic.main.activity_data_viewing.*
 
 class DataViewingActivity : AppCompatActivity(), ShowMenuFragmentDelegate, CloseMenuFragmentDelegate {
@@ -23,6 +22,8 @@ class DataViewingActivity : AppCompatActivity(), ShowMenuFragmentDelegate, Close
         dataAnalyzer.getMeasuredLocationsFromDatabase()
 
         mapFragment = MapFragment()
+        mapFragment.setRouteName(routeName)
+
         menuFragment = MenuFragment()
         val graphFragment = GraphFragment()
         val numericalFragment = NumericalFragment()
@@ -31,7 +32,7 @@ class DataViewingActivity : AppCompatActivity(), ShowMenuFragmentDelegate, Close
             .add(R.id.fragment_container,mapFragment)
             .commit()
 
-        mapFragment.getDataAnalyzer(dataAnalyzer)
+        mapFragment.setDataAnalyzer(dataAnalyzer)
         menuFragment.getDataAnalyzer(dataAnalyzer)
         numericalFragment.getDataAnalyzer(dataAnalyzer)
         graphFragment.getDataAnalyzer(dataAnalyzer)

@@ -19,12 +19,15 @@ class DataAnalyzer(val id: Int, val context: Context) {
         }.start()
     }
 
+
     fun getAmountOfLocations(): Int = measuredLocations.size
 
 
     fun getOriginalLocations(): ArrayList<MeasuredLocation> {
         return measuredLocations
     }
+
+
 
     fun getMeasuredLocationsAsGeoPoints(): ArrayList<GeoPoint> {
         val geoPoints: ArrayList<GeoPoint> = ArrayList()
