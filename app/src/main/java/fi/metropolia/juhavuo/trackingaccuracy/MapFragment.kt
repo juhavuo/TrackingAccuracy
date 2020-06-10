@@ -177,12 +177,7 @@ class MapFragment : Fragment() {
     }
 
 
-    private fun calculatePointInCircle(
-        lat: Double,
-        lgn: Double,
-        r: Float,
-        t: Int,
-        part: Int
+    private fun calculatePointInCircle(lat: Double, lgn: Double, r: Float, t: Int, part: Int
     ): GeoPoint {
 
         val earthRad = 6378137.0

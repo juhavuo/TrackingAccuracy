@@ -1,5 +1,6 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -15,14 +16,15 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(){
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         createNotificationChannel()
 
-        checkLocationPermission()
-        checkExternalStoragePermisson()
+        checkPermissions()
 
         if(LocationService.isServiceStarted){
             main_new_button.text = getText(R.string.main_button_straight_to_mapping)
@@ -43,30 +45,6 @@ class MainActivity : AppCompatActivity(){
             startActivity(intent)
         }
 
-
-    }
-
-    private fun checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) !=
-            PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 0
-            )
-        }
-    }
-
-    private fun checkExternalStoragePermisson(){
-
-        if(ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),0)
-        }
     }
 
     private fun createNotificationChannel(){
@@ -83,5 +61,12 @@ class MainActivity : AppCompatActivity(){
 
             Log.i("test",notificationChannel.toString())
         }
+    }
+
+    private fun checkPermissions(){
+        val permissionHelper = PermissionHelper()
+        val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION)
+        permissionHelper.checkAndRequestPermissions(this,permissions)
     }
 }

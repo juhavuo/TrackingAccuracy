@@ -1,5 +1,6 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
+import android.Manifest
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -131,4 +132,5 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         tracking_map.overlays.add(marker)
     }
+
 }
