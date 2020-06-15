@@ -20,6 +20,9 @@ interface MeasuredLocationDao{
     @Query("SELECT COUNT(*) FROM measuredLocation")
     fun getAmountOfLocations(): Int
 
+    @Query("SELECT * FROM measuredlocation")
+    fun getAllLocations(): List<MeasuredLocation>
+
     //if deleting route leads to deleting locations related to route
     //this might be useless
     /*

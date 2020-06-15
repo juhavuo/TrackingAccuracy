@@ -69,6 +69,7 @@ class LocationService: Service(){
                     if(isBinded && activity!=null){
                         activity!!.drawLocation(locationResult.locations[0])
                         locationList.addAll(locationResult.locations)
+                        Log.i("test","location recorded")
                     }
                 }
             }
@@ -113,8 +114,6 @@ class LocationService: Service(){
     fun registerClient(activity: Activity){
         this.activity = activity as CallbackForService
     }
-
-
 
     fun unregisterClient(){
         this.activity = null

@@ -5,18 +5,21 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import io.reactivex.Completable
+import io.reactivex.CompletableObserver
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Action
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(){
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +48,10 @@ class MainActivity : AppCompatActivity(){
             startActivity(intent)
         }
 
+        main_backup_button.setOnClickListener {
+            exportData()
+        }
+
     }
 
     private fun createNotificationChannel(){
@@ -69,4 +76,22 @@ class MainActivity : AppCompatActivity(){
             Manifest.permission.ACCESS_FINE_LOCATION)
         permissionHelper.checkAndRequestPermissions(this,permissions)
     }
+
+    private fun exportData(){
+
+        Thread{
+            val routeJsons: ArrayList<RouteJson> = ArrayList()
+            val db = RouteDB.get(this)
+            val routes = db.routeDao().getRoutes()
+            for(route in routes){
+                val locations = db.measuredLocationDao().getLocationsOfRouteWithId(route.routeid)
+                routeJsons.add(RouteJson(route, locations as ArrayList<MeasuredLocation>))
+            }
+            val gson = Gson()
+            val routeData = gson.toJson(routeJsons)
+            Log.i("data",routeData)
+        }.start()
+    }
+
+
 }

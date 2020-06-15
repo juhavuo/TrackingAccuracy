@@ -131,6 +131,7 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
         marker.icon = resources.getDrawable(R.drawable.ic_my_location_black_24dp,null)
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         tracking_map.overlays.add(marker)
+        tracking_map.invalidate()
     }
-
+    
 }

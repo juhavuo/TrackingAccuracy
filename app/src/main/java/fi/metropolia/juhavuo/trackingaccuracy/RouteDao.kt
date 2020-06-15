@@ -14,6 +14,7 @@ interface RouteDao{
     @Query("SELECT MAX(routeid) FROM route")
     fun getBiggestRouteId(): Int
 
+    //get amount of routes
     @Query("SELECT COUNT(*) FROM route")
     fun getAmountOfRoutes(): Int
 
