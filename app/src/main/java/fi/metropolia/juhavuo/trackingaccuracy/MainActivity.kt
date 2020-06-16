@@ -77,21 +77,15 @@ class MainActivity : AppCompatActivity(){
         permissionHelper.checkAndRequestPermissions(this,permissions)
     }
 
-    private fun exportData(){
+    private fun exportData() {
 
         Thread{
-            val routeJsons: ArrayList<RouteJson> = ArrayList()
-            val db = RouteDB.get(this)
-            val routes = db.routeDao().getRoutes()
-            for(route in routes){
-                val locations = db.measuredLocationDao().getLocationsOfRouteWithId(route.routeid)
-                routeJsons.add(RouteJson(route, locations as ArrayList<MeasuredLocation>))
-            }
-            val gson = Gson()
-            val routeData = gson.toJson(routeJsons)
-            Log.i("data",routeData)
+            val jsonSender = JsonSender(this)
+            jsonSender.createJsonFromDatabase()
+            jsonSender.convertToFile()
         }.start()
     }
 
-
 }
+
+
