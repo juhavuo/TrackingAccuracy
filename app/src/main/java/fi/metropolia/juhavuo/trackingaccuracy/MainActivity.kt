@@ -83,6 +83,7 @@ class MainActivity : AppCompatActivity(){
             val jsonSender = JsonSender(this)
             jsonSender.createJsonFromDatabase()
             jsonSender.convertToFile()
+            jsonSender.sendDataAsIntent()
         }.start()
     }
 

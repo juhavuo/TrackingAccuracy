@@ -1,10 +1,13 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import androidx.core.content.FileProvider
 import com.google.gson.Gson
-import java.io.FileWriter
+import java.io.*
 import java.lang.Exception
 
 class JsonSender(mContext: Context){
@@ -13,6 +16,7 @@ class JsonSender(mContext: Context){
     private var jsonString = ""
     private var fileName = ""
     private var filePath = ""
+    private var fileURI: Uri? = null
 
     fun createJsonFromDatabase(){
         val routeJsons: ArrayList<RouteJson> = ArrayList()
@@ -34,15 +38,16 @@ class JsonSender(mContext: Context){
     fun convertToFile(){
         if(jsonString.isNotEmpty() && fileName.isNotEmpty()){
             filePath = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString()+"/$fileName"
-            fileName = ""
             Log.i("test",filePath)
-            var file = FileWriter(filePath)
+            val file = File(filePath)
             try{
-                file.write(jsonString)
-                file.flush()
-                file.close()
+                val out = BufferedWriter(FileWriter(file))
+                out.write(jsonString)
+                out.close()
+                fileURI = FileProvider.getUriForFile(context,
+                    "fi.metropolia.juhavuo.trackingaccuracy", file)
                 Log.i("test","success")
-            }catch (e: Exception){
+            }catch (e: IOException){
                 Log.e("test",e.toString())
             }
 
@@ -50,9 +55,13 @@ class JsonSender(mContext: Context){
     }
 
     fun sendDataAsIntent(){
-      if(filePath.isNotEmpty()){
-
+      if(filePath.isNotEmpty() && fileURI != null){
+          val sharingIntent = Intent(Intent.ACTION_SEND)
+          sharingIntent.type = "text/json"
+          sharingIntent.putExtra(Intent.EXTRA_STREAM,fileURI)
+          context.startActivity(sharingIntent)
           filePath = ""
+
       }
     }
 }
