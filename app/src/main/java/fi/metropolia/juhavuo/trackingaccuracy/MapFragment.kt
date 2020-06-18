@@ -1,8 +1,6 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,7 +17,6 @@ import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.Polyline
 import kotlin.math.PI
@@ -34,6 +31,8 @@ class MapFragment : Fragment() {
 
     private var map: MapView? = null
     private var routeName: String? = null
+    private var routeId: Int? = null
+    private var mapFragmentJson: MapFragmentJson? = null
     private lateinit var lengths_listing_view: TextView
     private var dataAnalyzer: DataAnalyzer? = null
     private var delegate: ShowMenuFragmentDelegate? = null
@@ -75,7 +74,9 @@ class MapFragment : Fragment() {
         val title = view.findViewById<TextView>(R.id.map_fragment_title)
         if(routeName!=null){
             title.text = getString(R.string.map_fragment_title,routeName!!)
+
         }
+
         lengths_listing_view = view.findViewById(R.id.map_fragment_lengths_listing_textview)
         map = view.findViewById<MapView>(R.id.map_fragment_map)
         map?.setTileSource(TileSourceFactory.MAPNIK)
@@ -97,6 +98,15 @@ class MapFragment : Fragment() {
         menubutton.setOnClickListener {
             delegate?.showMenuFragment(this)
         }
+        val shareButton = view.findViewById<ImageButton>(R.id.map_fragment_share_button)
+        shareButton.setOnClickListener {
+            if(mapFragmentJson != null){
+                val jsonSender = JsonSender(requireContext())
+                jsonSender.createJsonFromCalculatedValues(mapFragmentJson!!)
+                jsonSender.convertToFile()
+                jsonSender.sendDataAsIntent()
+            }
+        }
         return view
     }
 
@@ -104,14 +114,13 @@ class MapFragment : Fragment() {
         dataAnalyzer = da
     }
 
-    fun setRouteName(rName: String){
+    fun setRouteData(rId: Int, rName: String){
+        routeId = rId
         routeName = rName
     }
 
     override fun onStart() {
         super.onStart()
-
-
         val showAccuracies = mapPreferencesHandler.getAccuracyPreference()
         Log.i("test", "map fragment on start, accuracies show: $showAccuracies")
         if (dataAnalyzer != null) {
@@ -192,36 +201,42 @@ class MapFragment : Fragment() {
         val amoutOfPreferences = mapPreferencesHandler.getAmoutOfAlgorithmPreferences()
         val polylines = arrayOfNulls<Polyline>(amoutOfPreferences)
         val lengthListings: ArrayList<String> = ArrayList()
+        val mappedRouteJsons: ArrayList<MappedRouteJson> = ArrayList()
+        var points: ArrayList<GeoPoint> = ArrayList()
         for (i in 0 until amoutOfPreferences) {
             polylines[i] = Polyline()
+
             if (mapPreferencesHandler.getAlgorithmPreference(i)) {
+                var parameterData: String? = null
                 when (i) {
                     0 -> {
                         polylines[0]?.outlinePaint?.color =
                             resources.getColor(R.color.colorMeasuredPolyline, null)
                         if (dataAnalyzer != null) {
-                            val points = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
+                            points = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
                             polylines[0]?.setPoints(points)
                             val length = dataAnalyzer!!.getLengthOfRoute(points)
                             lengthListings.add("0: $length m")
                         }
+
                     }
                     1 -> {
                         polylines[1]?.outlinePaint?.color =
                             resources.getColor(R.color.colorAlgorithm1Polyline, null)
                         val epsilon = mapPreferencesHandler.getEpsilonPreference()
                         if (dataAnalyzer != null) {
-                            val points = dataAnalyzer!!.getAlgorithm1GeoPoints(epsilon)
+                            points = dataAnalyzer!!.getAlgorithm1GeoPoints(epsilon)
                             polylines[1]?.setPoints(points)
                             val length = dataAnalyzer!!.getLengthOfRoute(points)
                             lengthListings.add("1: $length m")
+                            parameterData = "{\"epsilon\":$epsilon}"
                         }
                     }
                     2 -> {
                         polylines[2]?.outlinePaint?.color =
                             resources.getColor(R.color.colorAlgorithm2Polyline, null)
                         if (dataAnalyzer != null) {
-                            val points = dataAnalyzer!!.getKalmanFilteredGeoPoints()
+                            points = dataAnalyzer!!.getKalmanFilteredGeoPoints()
                             polylines[2]?.setPoints(points)
                             val length = dataAnalyzer!!.getLengthOfRoute(points)
                             lengthListings.add("2: $length m")
@@ -235,10 +250,11 @@ class MapFragment : Fragment() {
                         if (dataAnalyzer != null) {
                             val accuracyThreshold = dataAnalyzer!!.calculateAccuracyFromBarReading(
                                 accuracyThSeekbarValue, 1000)
-                            val points = dataAnalyzer!!.getRemainingLocations(accuracyThreshold)
+                            points = dataAnalyzer!!.getRemainingLocations(accuracyThreshold)
                             polylines[3]?.setPoints(points)
                             val length = dataAnalyzer!!.getLengthOfRoute(points)
                             lengthListings.add("3: $length m")
+                            parameterData = "{\"accuracy_threshold\":$accuracyThreshold}"
                         }
                     }
                     4 -> {
@@ -246,18 +262,23 @@ class MapFragment : Fragment() {
                             resources.getColor(R.color.colorAlgorithm4Polyline,null)
                         val amountOfPoints = mapPreferencesHandler.getRunningMeanPreference()
                         if(dataAnalyzer!=null){
-                            val points = dataAnalyzer!!.getMovingAverages(amountOfPoints,mapPreferencesHandler.getUseWeightsPreference())
+                            val isWeighted = mapPreferencesHandler.getUseWeightsPreference()
+                            points = dataAnalyzer!!.getMovingAverages(amountOfPoints,isWeighted)
                             polylines[4]?.setPoints(points)
                             val length = dataAnalyzer!!.getLengthOfRoute(points)
                             lengthListings.add("4: $length m")
+                            parameterData =  "{\"is_weigthed\":$isWeighted, \"amount_of_points\":$amountOfPoints}"
+
                         }
                     }
 
                 }
+                mappedRouteJsons.add(MappedRouteJson(i,parameterData,points))
+                points.clear()
                 map?.overlayManager?.add(polylines[i])
             }
-            map?.invalidate()
         }
+        map?.invalidate()
         var lengthtext = ""
         for((index,l) in lengthListings.withIndex()){
             lengthtext += l
@@ -266,6 +287,10 @@ class MapFragment : Fragment() {
             }
         }
         lengths_listing_view.text=lengthtext
+
+        if(routeId!=null && routeName!=null){
+            mapFragmentJson = MapFragmentJson(routeId!!,routeName!!,mappedRouteJsons)
+        }
     }
 
     private fun drawBearings(gpoints: ArrayList<GeoPoint>, bearings: ArrayList<Float>, r: Float){

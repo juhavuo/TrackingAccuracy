@@ -28,11 +28,16 @@ class JsonSender(mContext: Context){
         }
         val gson = Gson()
         jsonString = gson.toJson(routeJsons)
-        Log.i("test",jsonString)
-
         val timeStamp = System.currentTimeMillis()
         fileName = "database${timeStamp}.json"
 
+    }
+
+    fun createJsonFromCalculatedValues(mapFragmentJson: MapFragmentJson){
+        val gson = Gson()
+        jsonString = gson.toJson(mapFragmentJson)
+        val timestamp = System.currentTimeMillis()
+        fileName = "mappedRoutes${timestamp}.json"
     }
 
     fun convertToFile(){
@@ -50,7 +55,6 @@ class JsonSender(mContext: Context){
             }catch (e: IOException){
                 Log.e("test",e.toString())
             }
-
         }
     }
 

@@ -24,6 +24,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat = "@drawable/ic_baseline_share_24"
+                android:id="@+id/map_fragment_share_button"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/map_fragment_menu_button"
+                />
 
             <ImageButton
                 android:id="@+id/map_fragment_menu_button"
