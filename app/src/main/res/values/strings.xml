@@ -31,7 +31,6 @@
     <string name="map_fragment_title">Route name: %1$s</string>
     <string name="map_fragment_lengths_title">Lengths of shown paths:</string>
     <string name="map_fragment_lenths_listed">No routes selected</string>
-
     <string name="menu_fragment_title">Viewing options for map</string>
     <string name="menu_fragment_checkbox_accuracies">Show accuracies:</string>
     <string name="menu_fragment_checkbox_bearings">Show bearings:</string>

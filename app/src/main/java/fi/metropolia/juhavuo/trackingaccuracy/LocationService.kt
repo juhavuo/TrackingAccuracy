@@ -12,6 +12,9 @@ import android.os.IBinder
 import android.util.Log
 import com.google.android.gms.location.*
 
+/*
+    Service for recording locations and storing them to room database.
+ */
 class LocationService: Service(){
 
     companion object{
@@ -68,9 +71,8 @@ class LocationService: Service(){
                 if(locationResult != null){
                     if(isBinded && activity!=null){
                         activity!!.drawLocation(locationResult.locations[0])
-                        locationList.addAll(locationResult.locations)
-                        Log.i("test","location recorded")
                     }
+                    locationList.addAll(locationResult.locations)
                 }
             }
         }
@@ -85,7 +87,7 @@ class LocationService: Service(){
         }
         startLocationUpdates()
         isServiceStarted = true
-        return START_NOT_STICKY
+        return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -100,16 +102,6 @@ class LocationService: Service(){
         Log.i("test","service destroyed")
 
     }
-
-    /*
-     *Get the already gathered data of locations, so that mapping activity
-     * can draw the route after reopening of that activity.
-     */
-    fun getLocationData(): ArrayList<Location>{
-        return locationList
-    }
-
-    fun hasLocations(): Boolean = locationList.isNotEmpty()
 
     fun registerClient(activity: Activity){
         this.activity = activity as CallbackForService
