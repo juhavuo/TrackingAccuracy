@@ -130,7 +130,8 @@ class MapFragment : Fragment() {
                 map?.controller?.setCenter(geoPoints[0])
 
                 if (mapPreferencesHandler.getAccuracyPreference()) {
-                    constructPolygons(geoPoints, dataAnalyzer!!.getAccuracies())
+                    //constructPolygons(geoPoints, dataAnalyzer!!.getAccuracies())
+                    drawAccuraciesAsCircles(geoPoints,dataAnalyzer!!.getAccuracies())
                 }
                 if (mapPreferencesHandler.getBearingsPreference()){
                     drawBearings(geoPoints, dataAnalyzer!!.getBearings(),0.0003f)
@@ -144,39 +145,19 @@ class MapFragment : Fragment() {
 
     }
 
-    private fun constructPolygons(gpoints: ArrayList<GeoPoint>, accuracies: ArrayList<Float>) {
-        for ((index, gp) in gpoints.withIndex()) {
+    private fun drawAccuraciesAsCircles(gpoints: ArrayList<GeoPoint>, accuracies: ArrayList<Float>){
+        for( index in 0 until gpoints.size){
+            val circlePoints = Polygon.pointsAsCircle(gpoints[index],accuracies[index].toDouble())
             val polygon = Polygon()
-            val dividedInto = 36
-
-            for (t in 0..dividedInto) {
-                polygon.addPoint(
-                    calculatePointInCircle(
-                        gp.latitude,
-                        gp.longitude,
-                        accuracies[index],
-                        t,
-                        dividedInto
-                    )
-                )
-
+            for(point in circlePoints){
+                polygon.addPoint(point)
             }
-            polygon.addPoint(
-                GeoPoint(
-                    calculatePointInCircle(
-                        gp.latitude,
-                        gp.longitude,
-                        accuracies[index],
-                        0,
-                        dividedInto
-                    )
-                )
-            )
-            polygons.add(polygon)
             map?.overlayManager?.add(polygon)
             map?.invalidate()
         }
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -185,17 +166,7 @@ class MapFragment : Fragment() {
         }
     }
 
-
-    private fun calculatePointInCircle(lat: Double, lgn: Double, r: Float, t: Int, part: Int
-    ): GeoPoint {
-
-        val earthRad = 6378137.0
-        val radiansToDegrees = 180.0 / PI
-        val rlat = r / earthRad * radiansToDegrees
-        val rlng = r / (earthRad * cos(PI * lat / 180.0)) * radiansToDegrees
-        return GeoPoint(lat + rlat * cos(2 * PI * t / part), lgn + rlng * sin(2 * PI * t / part))
-    }
-
+    
     private fun drawPaths() {
 
         val amoutOfPreferences = mapPreferencesHandler.getAmoutOfAlgorithmPreferences()
