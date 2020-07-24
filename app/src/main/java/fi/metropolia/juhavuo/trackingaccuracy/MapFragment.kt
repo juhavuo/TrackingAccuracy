@@ -1,6 +1,7 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -73,7 +74,7 @@ class MapFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_map, container, false)
         val title = view.findViewById<TextView>(R.id.map_fragment_title)
         if(routeName!=null){
-            title.text = getString(R.string.map_fragment_title,routeName!!)
+            title.text = routeName!!
 
         }
 
@@ -149,6 +150,7 @@ class MapFragment : Fragment() {
         for( index in 0 until gpoints.size){
             val circlePoints = Polygon.pointsAsCircle(gpoints[index],accuracies[index].toDouble())
             val polygon = Polygon()
+            polygon.outlinePaint.color = resources.getColor(R.color.colorAccuracyCircle,null)
             for(point in circlePoints){
                 polygon.addPoint(point)
             }

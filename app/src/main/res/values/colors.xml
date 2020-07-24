@@ -6,6 +6,7 @@
     <color name="colorRvItemBorder">#002244</color>
     <color name="colorRvItemBg">#e0eeff</color>
     <color name="colorDataVievingBmBg">#e0fff0</color>
+    <color name="colorAccuracyCircle">#f0e0cc</color>
     <color name="colorMeasuredPolyline">#000000</color>
     <color name="colorAlgorithm1Polyline">#0011bb</color>
     <color name="colorAlgorithm2Polyline">#005020</color>

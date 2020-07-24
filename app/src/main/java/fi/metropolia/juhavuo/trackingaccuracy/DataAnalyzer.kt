@@ -27,8 +27,6 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return measuredLocations
     }
 
-
-
     fun getMeasuredLocationsAsGeoPoints(): ArrayList<GeoPoint> {
         val geoPoints: ArrayList<GeoPoint> = ArrayList()
         for (measuredLocation in measuredLocations) {
