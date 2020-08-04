@@ -19,17 +19,13 @@ data class MeasuredLocation(
    val routeID: Int,
    val latitude: Double,
    val longitude: Double,
-   val altitude: Double?,
-   val accuracy: Float?
+   val altitude: Double,
+   val speed: Float,
+   val accuracy: Float,
+   val bearing: Float,
+   val bearingAccuracy: Float,
+   val timestamp: Long
 ){
-   override fun toString(): String {
-      var returnstring = "measured location: lat $latitude, lng $longitude"
-      if(altitude!=null){
-         returnstring+=", alt $altitude"
-      }
-      if(accuracy!=null){
-         returnstring+="acc $accuracy"
-      }
-      return returnstring
-   }
+   override fun toString(): String = "measured location: lat $latitude, lng $longitude, alt $altitude, speed: $speed, acc $accuracy, timestamp $timestamp"
+
 }

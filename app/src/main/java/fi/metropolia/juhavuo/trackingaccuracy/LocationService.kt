@@ -12,6 +12,9 @@ import android.os.IBinder
 import android.util.Log
 import com.google.android.gms.location.*
 
+/*
+    Service for recording locations and storing them to room database.
+ */
 class LocationService: Service(){
 
     companion object{
@@ -60,8 +63,7 @@ class LocationService: Service(){
         }
 
         locationRequest = LocationRequest()
-        locationRequest.interval = 20 * 1000 //20 seconds
-        locationRequest.fastestInterval = 10 * 1000
+        locationRequest.interval = 10 * 1000 //10 seconds
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
         locationCallback = object: LocationCallback() {
@@ -69,8 +71,8 @@ class LocationService: Service(){
                 if(locationResult != null){
                     if(isBinded && activity!=null){
                         activity!!.drawLocation(locationResult.locations[0])
-                        locationList.addAll(locationResult.locations)
                     }
+                    locationList.addAll(locationResult.locations)
                 }
             }
         }
@@ -81,11 +83,11 @@ class LocationService: Service(){
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i("test","service started")
         if(intent!=null){
-            intent!!.getIntExtra("routeid",-1)
+            routeid=intent!!.getIntExtra("routeid",-1)
         }
         startLocationUpdates()
         isServiceStarted = true
-        return START_NOT_STICKY
+        return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -95,28 +97,15 @@ class LocationService: Service(){
     override fun onDestroy() {
 
         stopLocationUpdates()
-        saveLocationDataToDatabase()
+
         isServiceStarted = false
         Log.i("test","service destroyed")
 
-        //save location list to database
     }
-
-    /*
-     *Get the already gathered data of locations, so that mapping activity
-     * can draw the route after reopening of that activity.
-     */
-    fun getLocationData(): ArrayList<Location>{
-        return locationList
-    }
-
-    fun hasLocations(): Boolean = locationList.isNotEmpty()
 
     fun registerClient(activity: Activity){
         this.activity = activity as CallbackForService
     }
-
-
 
     fun unregisterClient(){
         this.activity = null
@@ -134,16 +123,33 @@ class LocationService: Service(){
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
-    private fun saveLocationDataToDatabase(){
+    fun saveLocationDataToDatabase(){
+        Log.i("test","save the database")
+        Log.i("test","location list size ${locationList.size}")
+        Log.i("test","route id: $routeid")
         Thread{
             //add proper stopping time
             if(routeid!=-1) {
                 database.routeDao().updateStoppingtime(routeid, System.currentTimeMillis())
 
                 //add collected locations to the database
+                var indexbase = 0
+                if(database.measuredLocationDao().getAmountOfLocations()>0) {
+                    indexbase = database.measuredLocationDao().getLargestLocationId() + 1
+                }
+                Log.i("index","start indexbase $indexbase")
+                Log.i("index","$routeid")
+
                 for ((index, location) in locationList.withIndex()) {
-                    val measuredLocation = MeasuredLocation(index,routeid,location.latitude,location.longitude,location.altitude,location.accuracy)
+                    var bearingAccuracy = -1f
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        bearingAccuracy = location.bearingAccuracyDegrees
+                    }
+                    val measuredLocation = MeasuredLocation(indexbase+index,routeid,location.latitude,location.longitude,
+                        location.altitude,location.speed,location.accuracy,location.bearing,bearingAccuracy,location.time)
+                    Log.i("index","index raising  ${indexbase+index}")
                     database.measuredLocationDao().insert(measuredLocation)
+                    Log.i("test","location inserted")
                 }
             }
         }.start()

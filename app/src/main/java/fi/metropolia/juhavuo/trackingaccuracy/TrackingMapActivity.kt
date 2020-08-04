@@ -1,11 +1,13 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
+import android.Manifest
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.location.Location
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
@@ -45,9 +47,7 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
             locationService = binder.getService()
             locationService.registerClient(this@TrackingMapActivity)
             LocationService.isBinded=true
-
         }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,14 +75,12 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
         }
 
         mapping_stop_button.setOnClickListener {
-
+            locationService.saveLocationDataToDatabase()
             //must unbind first
             unbindLocationService()
             stopService(serviceIntent)
             backToMain()
         }
-
-
     }
 
     override fun onStart() {
@@ -92,9 +90,7 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
         Intent(this, LocationService::class.java).also { intent->
             bindService(intent,connection, Context.BIND_AUTO_CREATE)
         }
-
     }
-
 
     override fun onStop(){
         super.onStop()
@@ -129,15 +125,14 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
             mapDrawn = true
             tracking_map.controller.setZoom(14.0)
             tracking_map.controller.setCenter(GeoPoint(location.latitude,location.longitude))
-
         }
+
         val marker = Marker(tracking_map)
         marker.position = GeoPoint(location.latitude,location.longitude)
-        marker.icon = resources.getDrawable(R.drawable.ic_my_location_black_24dp)
+        marker.icon = resources.getDrawable(R.drawable.ic_my_location_black_24dp,null)
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         tracking_map.overlays.add(marker)
-
+        tracking_map.invalidate()
     }
-
-
+    
 }

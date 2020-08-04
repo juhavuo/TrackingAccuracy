@@ -3,15 +3,18 @@ package fi.metropolia.juhavuo.trackingaccuracy
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Update
 
 @Dao
 interface RouteDao{
+
+    @Query("SELECT * FROM route")
+    fun getRoutes(): List<Route>
 
     //get the id of the newest route
     @Query("SELECT MAX(routeid) FROM route")
     fun getBiggestRouteId(): Int
 
+    //get amount of routes
     @Query("SELECT COUNT(*) FROM route")
     fun getAmountOfRoutes(): Int
 

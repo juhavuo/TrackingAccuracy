@@ -40,11 +40,10 @@ class StartMappingActivity : AppCompatActivity() {
                     }
                     val route = Route(id,route_name,starting_dialog_details_edittext.text.toString(),startingTime,-1L)
                     database.routeDao().insert(route)
+                    intent.putExtra("route_id",id)
+                    intent.putExtra("route_name",route_name)
+                    startActivity(intent)
                 }.start()
-
-                intent.putExtra("route_id",id)
-                intent.putExtra("route_name",route_name)
-                startActivity(intent)
             }else{
                 var toastText = ""
                 if(starting_dialog_name_edittext.text.isEmpty()){

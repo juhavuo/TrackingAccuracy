@@ -1,16 +1,22 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import io.reactivex.Completable
+import io.reactivex.CompletableObserver
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Action
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(){
@@ -37,22 +43,15 @@ class MainActivity : AppCompatActivity(){
             }
         }
 
-
-    }
-
-    private fun checkPermissions(){
-        if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-            PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 0)
+        main_routes_button.setOnClickListener {
+            val intent = Intent(this,RouteListingActivity::class.java)
+            startActivity(intent)
         }
 
-        if(ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),0)
+        main_backup_button.setOnClickListener {
+            exportData()
         }
+
     }
 
     private fun createNotificationChannel(){
@@ -70,4 +69,24 @@ class MainActivity : AppCompatActivity(){
             Log.i("test",notificationChannel.toString())
         }
     }
+
+    private fun checkPermissions(){
+        val permissionHelper = PermissionHelper()
+        val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION)
+        permissionHelper.checkAndRequestPermissions(this,permissions)
+    }
+
+    private fun exportData() {
+
+        Thread{
+            val jsonSender = JsonSender(this)
+            jsonSender.createJsonFromDatabase()
+            jsonSender.convertToFile()
+            jsonSender.sendDataAsIntent()
+        }.start()
+    }
+
 }
+
+
