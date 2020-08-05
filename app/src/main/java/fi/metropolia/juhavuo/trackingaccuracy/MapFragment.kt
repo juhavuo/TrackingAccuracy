@@ -11,6 +11,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
+import kotlinx.android.synthetic.main.fragment_map.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
@@ -39,6 +40,7 @@ class MapFragment : Fragment() {
     private var delegate: ShowMenuFragmentDelegate? = null
     private lateinit var mapPreferencesHandler: MapPreferencesHandler
     private val polygons: ArrayList<Polygon> = ArrayList()
+    private var averageAccuracy = 0.0
     private var isZoomed = false
     private var zoomLevel = 15.0
 
@@ -125,13 +127,16 @@ class MapFragment : Fragment() {
         val showAccuracies = mapPreferencesHandler.getAccuracyPreference()
         Log.i("test", "map fragment on start, accuracies show: $showAccuracies")
         if (dataAnalyzer != null) {
+            averageAccuracy = dataAnalyzer!!.getAverageAccuracy()
+            Log.i("average","$averageAccuracy")
+            map_fragment_average_accuracies_textview.text = resources.getString(R.string.map_fragment_average_accuracies,averageAccuracy)
+            //map_fragment_average_accuracies_textview.text = "Accuracy: ${averageAccuracy}m"
             val geoPoints = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
             if (geoPoints.isNotEmpty()) {
                 map?.controller?.setZoom(mapPreferencesHandler.getMapZoomPreference())
                 map?.controller?.setCenter(geoPoints[0])
 
                 if (mapPreferencesHandler.getAccuracyPreference()) {
-                    //constructPolygons(geoPoints, dataAnalyzer!!.getAccuracies())
                     drawAccuraciesAsCircles(geoPoints,dataAnalyzer!!.getAccuracies())
                 }
                 if (mapPreferencesHandler.getBearingsPreference()){
@@ -170,7 +175,6 @@ class MapFragment : Fragment() {
 
     
     private fun drawPaths() {
-
         val amoutOfPreferences = mapPreferencesHandler.getAmoutOfAlgorithmPreferences()
         val polylines = arrayOfNulls<Polyline>(amoutOfPreferences)
         val lengthListings: ArrayList<String> = ArrayList()

@@ -6,10 +6,17 @@ import android.util.Log
 import org.osmdroid.util.GeoPoint
 import kotlin.math.hypot
 
+/*
+    This class is for using filtering algorithms and calculating the data values to be shown
+    in MapFragment and GraphFragment.
+ */
 class DataAnalyzer(val id: Int, val context: Context) {
 
     private var measuredLocations: ArrayList<MeasuredLocation> = ArrayList()
 
+    /*
+        Fetches location data of the specific data set using id of that set (route).
+     */
     fun getMeasuredLocationsFromDatabase() {
         Thread {
             val db = RouteDB.get(context)
@@ -22,11 +29,16 @@ class DataAnalyzer(val id: Int, val context: Context) {
 
     fun getAmountOfLocations(): Int = measuredLocations.size
 
-
+    /*
+        To get the measured unfiltered locations. Returns: ArrayList of MeasuredLocation-objects.
+     */
     fun getOriginalLocations(): ArrayList<MeasuredLocation> {
         return measuredLocations
     }
 
+    /*
+        To get the measured unfiltered locations as ArrayList of GeoPoint-objects.
+     */
     fun getMeasuredLocationsAsGeoPoints(): ArrayList<GeoPoint> {
         val geoPoints: ArrayList<GeoPoint> = ArrayList()
         for (measuredLocation in measuredLocations) {
@@ -35,6 +47,9 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return geoPoints
     }
 
+    /*
+        Get ArrayList of Geopoints from given ArrayList of MeasuredLocation-objects
+     */
     private fun getMeasuredLocationsAsGeoPoints(mlocations: ArrayList<MeasuredLocation>): ArrayList<GeoPoint> {
         val geoPoints: ArrayList<GeoPoint> = ArrayList()
         for (measuredLocation in mlocations) {
@@ -43,6 +58,9 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return geoPoints
     }
 
+    /*
+        Get accuracies as ArrayList
+     */
     fun getAccuracies(): ArrayList<Float> {
         val accuracies: ArrayList<Float> = ArrayList()
         for (location in measuredLocations) {
@@ -52,6 +70,17 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return accuracies
     }
 
+    /*
+        Get average accuracy
+     */
+    fun getAverageAccuracy(): Double{
+        val accuracies = getAccuracies()
+        return accuracies.average()
+    }
+
+    /*
+        Get bearings as ArrayList
+     */
     fun getBearings(): ArrayList<Float> {
         val bearings: ArrayList<Float> = ArrayList()
         for (location in measuredLocations) {
@@ -138,7 +167,7 @@ class DataAnalyzer(val id: Int, val context: Context) {
      * for algorithm 1: Ramer-Douglas-Pecker
      */
     fun getAlgorithm1GeoPoints(epsilon: Double): ArrayList<GeoPoint> {
-        val locations: ArrayList<MeasuredLocation> = ArrayList()
+        val locations: ArrayList<MeasuredLocation> = ArrayList() //for output of locations
         val success = ramerDouglasPeucker(measuredLocations, epsilon, locations)
         if (!success) {
             locations.clear()
@@ -277,6 +306,9 @@ class DataAnalyzer(val id: Int, val context: Context) {
     }
 
 
+    /*
+        Calculates distances between adjacent locations in
+     */
     fun getDistances(): ArrayList<Float> {
 
         val distances: ArrayList<Float> = ArrayList()
@@ -297,6 +329,10 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return distances
     }
 
+    /*
+        Calculates distances between adjacent GeoPoints in GeoPoint-ArrayList
+        and returns them as ArrayList
+     */
     fun getDistances(gPoints: ArrayList<GeoPoint>): ArrayList<Float> {
         val distances: ArrayList<Float> = ArrayList()
         if (gPoints.size > 0) {
@@ -318,17 +354,6 @@ class DataAnalyzer(val id: Int, val context: Context) {
 
     fun getCumulativeDistances(): ArrayList<Float> {
         val distances = getDistances()
-        val travelledDistances: ArrayList<Float> = ArrayList()
-        var travelled = 0f
-        for (d in distances) {
-            travelled += d
-            travelledDistances.add(travelled)
-        }
-        return travelledDistances
-    }
-
-    fun getCumulativeDistances(gPoints: ArrayList<GeoPoint>): ArrayList<Float> {
-        val distances = getDistances(gPoints)
         val travelledDistances: ArrayList<Float> = ArrayList()
         var travelled = 0f
         for (d in distances) {
@@ -361,6 +386,9 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return timeIntervals
     }
 
+    /*
+        Get the altitudes as ArrayList
+     */
     fun getAltitudes(): ArrayList<Double> {
         val altitudes: ArrayList<Double> = ArrayList()
         for (ml in measuredLocations) {
@@ -369,6 +397,9 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return altitudes
     }
 
+    /*
+        Get the speeds as ArrayList
+     */
     fun getSpeeds(): ArrayList<Float> {
         val speeds: ArrayList<Float> = ArrayList()
         for (ml in measuredLocations) {
@@ -377,16 +408,18 @@ class DataAnalyzer(val id: Int, val context: Context) {
         return speeds
     }
 
+    /*
+        To convert SeekBar-value to accuracy in MenuFragment
+     */
     fun calculateAccuracyFromBarReading(s: Int, sMax: Int): Float {
         val extremes = getAccuracyExtremes()
         return (extremes[1] - extremes[0]) * s / sMax + extremes[0]
     }
 
-    private fun calculateBarReadingFromAccuracy(a: Float, sMax: Int): Int {
-        val extremes = getAccuracyExtremes()
-        return (sMax * (a - extremes[0]) / (extremes[1] - extremes[0])).toInt()
-    }
-
+    /*
+        Removes all locations that has accuracy in meters above the threshold_accuracy
+        (those that are too inaccurate). Returns: ArrayList of GeoPoint-objects
+     */
     fun getRemainingLocations(threshold_accuracy: Float): ArrayList<GeoPoint> {
         val geoPoints: ArrayList<GeoPoint> = ArrayList()
         for (mlocation in measuredLocations) {
@@ -397,19 +430,5 @@ class DataAnalyzer(val id: Int, val context: Context) {
 
         return geoPoints
     }
-
-    private fun getLocationsOrganizedByAccuracy(): ArrayList<MeasuredLocation> {
-        val cloneOfMeasuredLocations = measuredLocations.clone() as ArrayList<MeasuredLocation>
-        cloneOfMeasuredLocations.sortWith(Comparator { p0, p1 ->
-            when {
-                p0.accuracy > p1.accuracy -> 1
-                p0.accuracy == p1.accuracy -> 0
-                else -> -1
-            }
-        })
-
-        return cloneOfMeasuredLocations
-    }
-
 
 }
