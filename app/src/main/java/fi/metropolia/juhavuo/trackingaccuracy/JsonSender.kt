@@ -18,6 +18,10 @@ class JsonSender(mContext: Context){
     private var filePath = ""
     private var fileURI: Uri? = null
 
+    /*
+        Fetches all data from database and forms Json structure stored in json string
+        also gives a filename to be used when saving the file
+     */
     fun createJsonFromDatabase(){
         val routeJsons: ArrayList<RouteJson> = ArrayList()
         val db = RouteDB.get(context)
@@ -33,6 +37,10 @@ class JsonSender(mContext: Context){
 
     }
 
+    /*
+        Takes as parameter a MapFragmentJson, converts it in json string
+        also gives a filename to be used when saving the file
+     */
     fun createJsonFromCalculatedValues(mapFragmentJson: MapFragmentJson){
         val gson = Gson()
         jsonString = gson.toJson(mapFragmentJson)
@@ -40,6 +48,10 @@ class JsonSender(mContext: Context){
         fileName = "mappedRoutes${timestamp}.json"
     }
 
+    /*
+        Creates a file from the json object and saves it to external files directory: documents
+        uses fileName-parameter
+     */
     fun convertToFile(){
         if(jsonString.isNotEmpty() && fileName.isNotEmpty()){
             filePath = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).toString()+"/$fileName"
@@ -58,6 +70,10 @@ class JsonSender(mContext: Context){
         }
     }
 
+    /*
+        Sends file as sharing intent and starts external activity
+        that asks how to share the file (for example to Google Drive)
+     */
     fun sendDataAsIntent(){
       if(filePath.isNotEmpty() && fileURI != null){
           val sharingIntent = Intent(Intent.ACTION_SEND)
