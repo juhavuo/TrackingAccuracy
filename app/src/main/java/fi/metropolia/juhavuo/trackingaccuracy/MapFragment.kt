@@ -11,6 +11,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
+import kotlinx.android.synthetic.main.fragment_map.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
@@ -38,7 +39,7 @@ class MapFragment : Fragment() {
     private var dataAnalyzer: DataAnalyzer? = null
     private var delegate: ShowMenuFragmentDelegate? = null
     private lateinit var mapPreferencesHandler: MapPreferencesHandler
-    private val polygons: ArrayList<Polygon> = ArrayList()
+    private var averageAccuracy = 0.0
     private var isZoomed = false
     private var zoomLevel = 15.0
 
@@ -48,6 +49,7 @@ class MapFragment : Fragment() {
 
         mapPreferencesHandler = MapPreferencesHandler(context)
 
+        //for using MenuFragment
         if (context is ShowMenuFragmentDelegate) {
             delegate = context
         }
@@ -70,12 +72,10 @@ class MapFragment : Fragment() {
     ): View? {
         isZoomed = false
 
-
         val view = inflater.inflate(R.layout.fragment_map, container, false)
         val title = view.findViewById<TextView>(R.id.map_fragment_title)
         if(routeName!=null){
-            title.text = routeName!!
-
+            title.text = routeName!! //set the title to the fragment
         }
 
         lengths_listing_view = view.findViewById(R.id.map_fragment_lengths_listing_textview)
@@ -111,6 +111,7 @@ class MapFragment : Fragment() {
         return view
     }
 
+    //used when DataAnalyzer has loaded the data from database
     fun setDataAnalyzer(da: DataAnalyzer) {
         dataAnalyzer = da
     }
@@ -122,30 +123,30 @@ class MapFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        val showAccuracies = mapPreferencesHandler.getAccuracyPreference()
-        Log.i("test", "map fragment on start, accuracies show: $showAccuracies")
         if (dataAnalyzer != null) {
+            averageAccuracy = dataAnalyzer!!.getAverageAccuracy()
+            Log.i("average","$averageAccuracy")
+            map_fragment_average_accuracies_textview.text = resources.getString(R.string.map_fragment_average_accuracies,averageAccuracy)
             val geoPoints = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
             if (geoPoints.isNotEmpty()) {
                 map?.controller?.setZoom(mapPreferencesHandler.getMapZoomPreference())
                 map?.controller?.setCenter(geoPoints[0])
 
                 if (mapPreferencesHandler.getAccuracyPreference()) {
-                    //constructPolygons(geoPoints, dataAnalyzer!!.getAccuracies())
                     drawAccuraciesAsCircles(geoPoints,dataAnalyzer!!.getAccuracies())
                 }
                 if (mapPreferencesHandler.getBearingsPreference()){
                     drawBearings(geoPoints, dataAnalyzer!!.getBearings(),0.0003f)
                 }
                 drawPaths()
-
             }
-
             map?.invalidate()
         }
-
     }
 
+    /*
+        Draw the accuracies to the map
+     */
     private fun drawAccuraciesAsCircles(gpoints: ArrayList<GeoPoint>, accuracies: ArrayList<Float>){
         for( index in 0 until gpoints.size){
             val circlePoints = Polygon.pointsAsCircle(gpoints[index],accuracies[index].toDouble())
@@ -159,8 +160,10 @@ class MapFragment : Fragment() {
         }
     }
 
-
-
+    /*
+        For now the zoom level is stored in shared preferences
+        when exiting MapFragment
+     */
     override fun onDestroyView() {
         super.onDestroyView()
         if (isZoomed) {
@@ -168,9 +171,11 @@ class MapFragment : Fragment() {
         }
     }
 
-    
+    /*
+        Draws the path according to both measured locations and calculated locations
+        using algorithms
+     */
     private fun drawPaths() {
-
         val amoutOfPreferences = mapPreferencesHandler.getAmoutOfAlgorithmPreferences()
         val polylines = arrayOfNulls<Polyline>(amoutOfPreferences)
         val lengthListings: ArrayList<String> = ArrayList()
@@ -191,7 +196,6 @@ class MapFragment : Fragment() {
                             val length = dataAnalyzer!!.getLengthOfRoute(points)
                             lengthListings.add("0: $length m")
                         }
-
                     }
                     1 -> {
                         polylines[1]?.outlinePaint?.color =
@@ -244,7 +248,6 @@ class MapFragment : Fragment() {
 
                         }
                     }
-
                 }
                 mappedRouteJsons.add(MappedRouteJson(i,parameterData,points))
                 points.clear()
@@ -266,6 +269,10 @@ class MapFragment : Fragment() {
         }
     }
 
+    /*
+        Draws bearings as lines pointing from location to the direction of bearing,
+        parameter r: the length of line
+     */
     private fun drawBearings(gpoints: ArrayList<GeoPoint>, bearings: ArrayList<Float>, r: Float){
 
         for ((index,gp) in gpoints.withIndex()){

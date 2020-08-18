@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 //https://stackoverflow.com/a/46907385
+//For permission handling
 class PermissionHelper {
 
     private val ID_FOR_PERMISSIONS = 101

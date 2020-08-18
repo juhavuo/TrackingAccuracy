@@ -35,6 +35,8 @@ class LocationService: Service(){
 
     override fun onCreate() {
         super.onCreate()
+
+        //notification to notification channel about service
         val pendingIntent = Intent(this,LocationService::class.java)
             .let{notificationIntent->PendingIntent.getActivity(this,0,notificationIntent,0)}
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -62,17 +64,19 @@ class LocationService: Service(){
             Log.i("test",secExp.toString())
         }
 
+        //settings for location gathering
         locationRequest = LocationRequest()
         locationRequest.interval = 10 * 1000 //10 seconds
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
+        //collecting locations
         locationCallback = object: LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult?) {
                 if(locationResult != null){
-                    if(isBinded && activity!=null){
+                    if(isBinded && activity!=null){ //if binded, draw to view
                         activity!!.drawLocation(locationResult.locations[0])
                     }
-                    locationList.addAll(locationResult.locations)
+                    locationList.addAll(locationResult.locations) //add locations to ArrayList
                 }
             }
         }
@@ -80,6 +84,9 @@ class LocationService: Service(){
         database = RouteDB.get(this)
     }
 
+    /*
+        When service is started, gathering of location updates is also started.
+     */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i("test","service started")
         if(intent!=null){
@@ -94,10 +101,12 @@ class LocationService: Service(){
         return binder
     }
 
+    /*
+        When service is destroyed location collection is stopped
+     */
     override fun onDestroy() {
 
         stopLocationUpdates()
-
         isServiceStarted = false
         Log.i("test","service destroyed")
 

@@ -7,6 +7,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.numerical_fragment_recyclerview_row.view.*
 
+/*
+    For RecyclerView used in NumericalFragment. First version. Column width is determined
+    from device width, witch is not suitable solution for all devices.
+ */
 class NumericalDataAdapter(var items: ArrayList<MeasuredLocation>, val context: Context):
         RecyclerView.Adapter<NumericalDataAdapter.NumerericalDataHolder>(){
 

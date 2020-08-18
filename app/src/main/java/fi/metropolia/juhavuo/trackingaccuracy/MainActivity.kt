@@ -54,6 +54,10 @@ class MainActivity : AppCompatActivity(){
 
     }
 
+    /*
+        Creates channel for notifications so service can  use it.
+        There is no needs for checks if the channel is already there.
+     */
     private fun createNotificationChannel(){
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -70,6 +74,10 @@ class MainActivity : AppCompatActivity(){
         }
     }
 
+    /*
+        Checks for persmissions to read external storage for using the map
+        and access fine location for getting the locations.
+     */
     private fun checkPermissions(){
         val permissionHelper = PermissionHelper()
         val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -77,6 +85,9 @@ class MainActivity : AppCompatActivity(){
         permissionHelper.checkAndRequestPermissions(this,permissions)
     }
 
+    /*
+        For now database data is exported as json. Other options need to be added.
+     */
     private fun exportData() {
 
         Thread{

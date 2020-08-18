@@ -8,6 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+/*
+    This fragment is for showing unfiltered location data in spread sheet.
+ */
 class NumericalFragment: Fragment(){
 
     private var dataAnalyzer: DataAnalyzer? = null
@@ -20,7 +23,6 @@ class NumericalFragment: Fragment(){
     ): View? {
         val view = inflater.inflate(R.layout.fragment_numerical,container,false)
 
-
         if(dataAnalyzer!=null){
             measuredLocations = dataAnalyzer!!.getOriginalLocations()
         }else{
@@ -32,7 +34,6 @@ class NumericalFragment: Fragment(){
         val numericalDataAdapter = context?.let { NumericalDataAdapter(measuredLocations, it) }
         recyclerView.layoutManager = linearLayoutManager
         recyclerView.adapter = numericalDataAdapter
-
         return view
     }
 

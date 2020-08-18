@@ -60,11 +60,13 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
         route_id = intent.getIntExtra("route_id",-1)
         val route_name = intent.getStringExtra("route_name")
 
+        //set the map title
         if(!route_name.isNullOrBlank()){
             tracking_map_title.text = route_name
         }
         tracking_map.setTileSource(TileSourceFactory.MAPNIK)
 
+        //route_id to service so that service can use it database operations
         val serviceClass = LocationService::class.java
         val serviceIntent = Intent(applicationContext,serviceClass)
         serviceIntent.putExtra("routeid",route_id)
@@ -74,6 +76,9 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
             startService(serviceIntent)
         }
 
+        //for stop button, when pressed, locations are saved to database
+        // service is unbinded and stopped and after that this activity closes,
+        //MainActivity opens
         mapping_stop_button.setOnClickListener {
             locationService.saveLocationDataToDatabase()
             //must unbind first
@@ -83,6 +88,7 @@ class TrackingMapActivity : AppCompatActivity(), LocationService.CallbackForServ
         }
     }
 
+    //starts the service
     override fun onStart() {
         super.onStart()
 
