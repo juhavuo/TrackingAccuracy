@@ -32,6 +32,7 @@ class MenuFragment: Fragment(){
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        //CheckBox to show accuracies in MapView
         val view = inflater.inflate(R.layout.fragment_menu,container,false)
         val accuraciesCheckBox = view.findViewById<CheckBox>(R.id.menu_fragment_accuracies_checkBox)
         accuraciesCheckBox.isChecked = mapPreferencesHandler.getAccuracyPreference()
@@ -39,18 +40,21 @@ class MenuFragment: Fragment(){
             mapPreferencesHandler.storeAccuracyPreference(isChecked)
         }
 
+        //CheckBox to show bearings in MapView
         val bearingsCheckBox = view.findViewById<CheckBox>(R.id.menu_fragment_bearings_checkbox)
         bearingsCheckBox.isChecked = mapPreferencesHandler.getBearingsPreference()
         bearingsCheckBox.setOnCheckedChangeListener{_, isChecked ->
             mapPreferencesHandler.storeBearingsPreference(isChecked)
         }
 
+        //CheckBox to show original unfiltered locations in MapView
         val showMeasuredCheckBox = view.findViewById<CheckBox>(R.id.menu_fragment_show_measured_checkbox)
         showMeasuredCheckBox.isChecked = mapPreferencesHandler.getAlgorithmPreference(0)
         showMeasuredCheckBox.setOnCheckedChangeListener { _, isChecked ->
             mapPreferencesHandler.storeAlgorithmPreference(0,isChecked)
         }
 
+        //CheckBoxes to show paths calculated using different algororithms in MapView
         val algorithmCheckBoxes: ArrayList<CheckBox> = ArrayList()
         algorithmCheckBoxes.add(view.findViewById(R.id.menu_fragment_algorithm_1_checkbox))
         algorithmCheckBoxes.add(view.findViewById(R.id.menu_fragment_algorithm_2_checkbox))
@@ -63,6 +67,7 @@ class MenuFragment: Fragment(){
             }
         }
 
+        //Set up of SeekBar for Ramer-Douglas-Peucker algorithm to adjust epsilon value
         val epsilonTextView = view.findViewById<TextView>(R.id.menu_fragment_epsilon_value)
         val epsilonSeekBar = view.findViewById<SeekBar>(R.id.menu_fragment_epsilon_seekbar)
         val epsilonMultiplier = 1000.0*2000
@@ -79,9 +84,9 @@ class MenuFragment: Fragment(){
             override fun onStartTrackingTouch(p0: SeekBar?) {}
 
             override fun onStopTrackingTouch(p0: SeekBar?) {}
-
         })
 
+        //Seekbar for remove most inaccurate locations -algorithm:
         val accuracySeekbar = view.findViewById<SeekBar>(R.id.menu_fragment_accuracy_threshold_seekbar)
         val accuracyThresholdTextView = view.findViewById<TextView>(R.id.menu_fragment_accuracy_threshold_value_textview)
         val locationsRemovedTextView = view.findViewById<TextView>(R.id.menu_fragment_locations_removed_textview)
@@ -92,7 +97,6 @@ class MenuFragment: Fragment(){
         var pointsToRemoved: Int
         val sliderMax = 1000
         if(dataAnalyzer!=null){
-
             extremes = dataAnalyzer!!.getAccuracyExtremes()
             accuracyThreshold = dataAnalyzer!!.calculateAccuracyFromBarReading(accuracyThSeekbarReading,sliderMax)
             accuracySeekbar.progress = accuracyThSeekbarReading
@@ -123,6 +127,8 @@ class MenuFragment: Fragment(){
 
         })
 
+        //For running average algorithm, there is TextView for input of
+        // from how many values the average is calculated
         val algorithm4EditText = view.findViewById<EditText>(R.id.menu_fragment_algorithm4_edit_text)
         algorithm4EditText.setOnEditorActionListener { view, actionId, event ->
             if(actionId==EditorInfo.IME_ACTION_DONE){
@@ -136,12 +142,14 @@ class MenuFragment: Fragment(){
             false
         }
 
+        //Checkbox for using weights in running average algorithm
         val useWeightsCheckBox = view.findViewById<CheckBox>(R.id.menu_fragment_include_weights_checkbox)
         useWeightsCheckBox.isChecked = mapPreferencesHandler.getUseWeightsPreference()
         useWeightsCheckBox.setOnCheckedChangeListener { _, isChecked ->
             mapPreferencesHandler.storeUseWeightsPreference(isChecked)
         }
 
+        //closing MenuFragment brings back to MapFragment
         val closeButton = view.findViewById<ImageButton>(R.id.menu_fragment_close_button)
         closeButton.setOnClickListener {
             delegate?.closeMenuFragment()
@@ -149,14 +157,13 @@ class MenuFragment: Fragment(){
         return view
     }
 
-
-
     fun getDataAnalyzer(da: DataAnalyzer){
         dataAnalyzer = da
     }
 
 }
 
+//for closing MenuFragment and return to MapFragment
 interface CloseMenuFragmentDelegate{
     fun closeMenuFragment()
 }

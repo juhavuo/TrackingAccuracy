@@ -28,6 +28,7 @@ class DataViewingActivity : AppCompatActivity(), ShowMenuFragmentDelegate, Close
         val graphFragment = GraphFragment()
         val numericalFragment = NumericalFragment()
 
+        //MapFragment opens automatically, when DataViewingActivity starts
         supportFragmentManager.beginTransaction()
             .add(R.id.fragment_container,mapFragment)
             .commit()
@@ -37,6 +38,7 @@ class DataViewingActivity : AppCompatActivity(), ShowMenuFragmentDelegate, Close
         numericalFragment.getDataAnalyzer(dataAnalyzer)
         graphFragment.getDataAnalyzer(dataAnalyzer)
 
+        //changing fragment in the view
         data_viewing_bottom_bar.setOnNavigationItemSelectedListener {menuItem ->
             when(menuItem.itemId){
                 R.id.data_viewing_bm_graphs_item ->{
@@ -66,6 +68,7 @@ class DataViewingActivity : AppCompatActivity(), ShowMenuFragmentDelegate, Close
 
     }
 
+    //MenuFragment opens in different place in MapFragment
     override fun showMenuFragment(fragment: MapFragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container,menuFragment)
