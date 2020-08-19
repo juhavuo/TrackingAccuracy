@@ -52,6 +52,11 @@ class MainActivity : AppCompatActivity(){
             exportData()
         }
 
+        main_about_button.setOnClickListener {
+            val intent = Intent(this,AboutActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     /*

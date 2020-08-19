@@ -5,6 +5,10 @@
     <string name="main_button_straight_to_mapping">Return to live map</string>
     <string name="main_button_routes">View routes</string>
     <string name="main_button_backup">Backup data</string>
+    <string name="button_about">About</string>
+    <string name="about_activity_title">About application</string>
+    <string name="about_activity_button_about">Apache 2.0 licence</string>
+    <string name="button_close">Close</string>
     <string name="starting_dialog_title">Route information</string>
     <string name="starting_dialog_name">Name</string>
     <string name="starting_dialog_description">Description</string>

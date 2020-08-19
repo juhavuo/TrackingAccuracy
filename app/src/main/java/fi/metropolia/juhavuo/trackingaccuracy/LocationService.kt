@@ -36,7 +36,7 @@ class LocationService: Service(){
     override fun onCreate() {
         super.onCreate()
 
-        //notification to notification channel about service
+        //notification to notification channel about_application service
         val pendingIntent = Intent(this,LocationService::class.java)
             .let{notificationIntent->PendingIntent.getActivity(this,0,notificationIntent,0)}
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
