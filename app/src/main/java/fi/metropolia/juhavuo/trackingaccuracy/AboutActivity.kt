@@ -1,5 +1,6 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -17,22 +18,50 @@ class AboutActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
 
-        Thread{
-            try{
-                //https://stackoverflow.com/questions/39500045/in-kotlin-how-do-i-read-the-entire-contents-of-an-inputstream-into-a-string
-                val inputStream: InputStream = resources.openRawResource(R.raw.about_application)
-                about_text = inputStream.bufferedReader().use {
-                    it.readText()
+        Thread {
+            about_text = readFromFile(R.raw.about_application)
+            if (!about_text.isNullOrBlank()) {
+                this@AboutActivity.runOnUiThread {
+                    about_activity_edit_text.setText(about_text)
                 }
-                inputStream.close()
-                if(!about_text.isNullOrBlank()) {
-                    this@AboutActivity.runOnUiThread {
-                        about_activity_edit_text.setText(about_text)
-                    }
-                }
-            }catch(e: Exception){
-                Log.e("filehandling", e.toString())
             }
         }.start()
+
+        about_button_apache.setOnClickListener {
+            if(apache_licence_2.isNullOrBlank()){
+                Thread {
+                    apache_licence_2 = readFromFile(R.raw.apache_licence)
+                    this@AboutActivity.runOnUiThread {
+                        about_activity_edit_text.setText(apache_licence_2)
+                    }
+                }.start()
+            }else{
+                about_activity_edit_text.setText(apache_licence_2)
+            }
+
+        }
+
+        about_activity_close_button.setOnClickListener {
+            val intent = Intent(this,MainActivity::class.java)
+            startActivity(intent)
+        }
+
+    }
+
+    private fun readFromFile(id: Int): String? {
+        var textAsString = ""
+        try {
+            //https://stackoverflow.com/questions/39500045/in-kotlin-how-do-i-read-the-entire-contents-of-an-inputstream-into-a-string
+            val inputStream: InputStream = resources.openRawResource(id)
+            textAsString = inputStream.bufferedReader().use {
+                it.readText()
+            }
+            inputStream.close()
+
+        } catch (e: Exception) {
+            Log.e("filehandling", e.toString())
+        }
+        return textAsString
+
     }
 }
