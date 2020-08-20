@@ -1,6 +1,7 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -11,7 +12,6 @@ import java.lang.Exception
 class AboutActivity : AppCompatActivity() {
 
     private var about_text: String? = null
-    private var apache_licence_2: String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,21 +28,15 @@ class AboutActivity : AppCompatActivity() {
         }.start()
 
         about_button_apache.setOnClickListener {
-            if(apache_licence_2.isNullOrBlank()){
-                Thread {
-                    apache_licence_2 = readFromFile(R.raw.apache_licence)
-                    this@AboutActivity.runOnUiThread {
-                        about_activity_edit_text.setText(apache_licence_2)
-                    }
-                }.start()
-            }else{
-                about_activity_edit_text.setText(apache_licence_2)
-            }
-
+            val browsingIntent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://www.apache.org/licenses/LICENSE-2.0")
+            )
+            startActivity(browsingIntent)
         }
 
         about_activity_close_button.setOnClickListener {
-            val intent = Intent(this,MainActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
 
