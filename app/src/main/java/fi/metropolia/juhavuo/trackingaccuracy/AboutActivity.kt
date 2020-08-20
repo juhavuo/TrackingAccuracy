@@ -11,7 +11,8 @@ import java.lang.Exception
 
 class AboutActivity : AppCompatActivity() {
 
-    private var about_text: String? = null
+    private var about_map_text = ""
+    private var about_graph_text = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,15 +20,24 @@ class AboutActivity : AppCompatActivity() {
         setContentView(R.layout.activity_about)
 
         Thread {
-            about_text = readFromFile(R.raw.about_application)
-            if (!about_text.isNullOrBlank()) {
-                this@AboutActivity.runOnUiThread {
-                    about_activity_edit_text.setText(about_text)
-                }
+            about_map_text = readFromFile(R.raw.about_map_application)
+            about_graph_text = readFromFile(R.raw.about_graph)
+            this@AboutActivity.runOnUiThread {
+                about_activity_map_edit_text.setText(about_map_text)
+                about_activity_graph_edit_text.setText(about_graph_text)
             }
+
         }.start()
 
-        about_button_apache.setOnClickListener {
+        about_button_map_licence.setOnClickListener {
+            val browsingIntent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://creativecommons.org/licenses/by-sa/2.0/legalcode")
+            )
+            startActivity(browsingIntent)
+        }
+
+        about_button_graph_licence.setOnClickListener {
             val browsingIntent = Intent(
                 Intent.ACTION_VIEW,
                 Uri.parse("https://www.apache.org/licenses/LICENSE-2.0")
@@ -42,7 +52,7 @@ class AboutActivity : AppCompatActivity() {
 
     }
 
-    private fun readFromFile(id: Int): String? {
+    private fun readFromFile(id: Int): String {
         var textAsString = ""
         try {
             //https://stackoverflow.com/questions/39500045/in-kotlin-how-do-i-read-the-entire-contents-of-an-inputstream-into-a-string

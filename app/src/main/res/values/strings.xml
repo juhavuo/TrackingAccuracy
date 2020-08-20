@@ -7,7 +7,10 @@
     <string name="main_button_backup">Backup data</string>
     <string name="button_about">About</string>
     <string name="about_activity_title">About application</string>
-    <string name="about_activity_button_about">Apache 2.0 licence</string>
+    <string name="about_map_title">Map used</string>
+    <string name="about_graph_title">Graphs used</string>
+    <string name="about_activity_button_graph_licence">Licence for graph</string>
+    <string name="about_activity_button_map_licence">Licence for map</string>
     <string name="button_close">Close</string>
     <string name="starting_dialog_title">Route information</string>
     <string name="starting_dialog_name">Name</string>
