@@ -1,0 +1,4 @@
+Ramer-Douglas-Peucker algorithm that is used in
+smoothing of the gps given path was taken from
+Rosettacode.org website. The licence for the
+algorithm is GNU Free Documentation License 1.2.

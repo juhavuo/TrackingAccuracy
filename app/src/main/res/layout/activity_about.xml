@@ -33,7 +33,19 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/about_activity_linear_layout"
             android:orientation="vertical">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/about_activity_explanation_edit_text"
+                android:text="TEMPLATE"
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:importantForAutofill="no"
+                tools:ignore="HardcodedText,LabelFor,TextFields" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -77,7 +89,9 @@
                 android:text="@string/about_activity_button_graph_licence"
                 android:id="@+id/about_button_graph_licence"
                 />
-
+            <include
+                android:id="@+id/about_activity_rdp_segment"
+                layout="@layout/about_page_segment"/>
         </LinearLayout>
     </ScrollView>
 

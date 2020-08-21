@@ -11,6 +11,7 @@
     <string name="about_graph_title">Graphs used</string>
     <string name="about_activity_button_graph_licence">Licence for graph</string>
     <string name="about_activity_button_map_licence">Licence for map</string>
+    <string name="about_activity_button_rdp_licence">Licence for Ramer-Douglas-Peucker</string>
     <string name="button_close">Close</string>
     <string name="starting_dialog_title">Route information</string>
     <string name="starting_dialog_name">Name</string>
