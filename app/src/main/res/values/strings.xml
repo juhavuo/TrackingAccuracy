@@ -27,6 +27,7 @@
     <string name="route_listing_spinner_title">Organize by</string>
     <string name="route_listing_rv_row_view_button">View</string>
     <string name="route_listing_rv_row_delete_button">Delete</string>
+    <string name="route_listing_view_selected">View selected routes</string>
     <string-array name="route_listing_spinner_array">
         <item>date, newest first</item>
         <item>date, oldest first</item>

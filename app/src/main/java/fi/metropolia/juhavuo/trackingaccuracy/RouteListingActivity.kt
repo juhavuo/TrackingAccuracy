@@ -1,5 +1,6 @@
 package fi.metropolia.juhavuo.trackingaccuracy
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -42,9 +43,24 @@ class RouteListingActivity : AppCompatActivity() {
                    else -> routeListingAdapter?.organizeByStartingTime(true)
                }
             }
-
         }
 
+        route_listing_close_button.setOnClickListener {
+            val intent = Intent(this,MainActivity::class.java)
+            startActivity(intent)
+        }
+
+        route_listing_view_selected_button.setOnClickListener {
+            if(routeListingAdapter!=null) {
+                val ids = routeListingAdapter!!.getIdsOfSelectedRoutes()
+                Log.i("ids","$ids")
+                if(ids.isNotEmpty()){
+                    val intent = Intent(this,DataViewingActivity::class.java)
+                    intent.putExtra("ids",ids.toArray())
+                    startActivity(intent)
+                }
+            }
+        }
     }
 
     private fun getRoutes(){

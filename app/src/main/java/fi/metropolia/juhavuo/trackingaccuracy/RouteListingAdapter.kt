@@ -15,29 +15,43 @@ import kotlin.collections.ArrayList
 class RouteListingAdapter(var items: ArrayList<Route>, val context: Context):
     RecyclerView.Adapter<RouteListingAdapter.RoutesHolder>(){
 
+    private val ids: ArrayList<Int> = ArrayList()
+
     inner class RoutesHolder(v: View): RecyclerView.ViewHolder(v){
         val title_tv = v.route_listing_rv_row_title_tv
         val description_tv = v.route_listing_rv_row_description_tv
         val startingTime_tv = v.route_listing_rv_row_time_tv
-        val view_button = v.route_listing_rv_row_view_button
+        //val view_button = v.route_listing_rv_row_view_button
+        val checkbox = v.route_listing_row_check_box
+
         val delete_button = v.route_listing_rv_row_delete_button
 
         init {
+            /*
             view_button.setOnClickListener {
                 val intent = Intent(context,DataViewingActivity::class.java)
                 intent.putExtra("routeid",items[adapterPosition].routeid)
                 Log.i("test","${items[adapterPosition].routeid}")
                 intent.putExtra("routename",items[adapterPosition].name)
                 context.startActivity(intent)
-            }
+            }*/
             delete_button.setOnClickListener {
                 val database = RouteDB.get(context)
                 val routeId = items[adapterPosition].routeid
+                ids.remove(routeId)//removes id if there is in the list
                 Thread{
                     database.routeDao().deleteRouteWithId(routeId)
                 }.start()
             }
+            checkbox.setOnCheckedChangeListener{ _,isChecked ->
+                if(isChecked){
+                    ids.add(items[adapterPosition].routeid)
+                }else{
+                    ids.remove(items[adapterPosition].routeid)
+                }
+            }
         }
+
     }
 
     override fun onCreateViewHolder(
@@ -93,5 +107,9 @@ class RouteListingAdapter(var items: ArrayList<Route>, val context: Context):
         if(!alphabetic)
             items.reverse()
         notifyDataSetChanged()
+    }
+
+    fun getIdsOfSelectedRoutes(): ArrayList<Int>{
+        return ids
     }
 }

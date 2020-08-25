@@ -34,15 +34,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/route_listing_rv_row_view_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/route_listing_rv_row_view_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/route_listing_rv_row_description_tv"
-        app:layout_constraintStart_toStartOf="@id/route_listing_rv_row_vertical_guideline"/>
-
-    <Button
         android:id="@+id/route_listing_rv_row_delete_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,5 +48,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/route_listing_row_check_box"
+        app:layout_constraintTop_toBottomOf="@id/route_listing_rv_row_description_tv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/route_listing_rv_row_vertical_guideline"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
