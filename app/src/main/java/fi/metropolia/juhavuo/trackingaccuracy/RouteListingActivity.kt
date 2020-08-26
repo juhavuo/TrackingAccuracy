@@ -53,10 +53,10 @@ class RouteListingActivity : AppCompatActivity() {
         route_listing_view_selected_button.setOnClickListener {
             if(routeListingAdapter!=null) {
                 val ids = routeListingAdapter!!.getIdsOfSelectedRoutes()
-                Log.i("ids","$ids")
+                //Log.i("ids","$ids")
                 if(ids.isNotEmpty()){
                     val intent = Intent(this,DataViewingActivity::class.java)
-                    intent.putExtra("ids",ids.toArray())
+                    intent.putIntegerArrayListExtra("ids",ids)
                     startActivity(intent)
                 }
             }

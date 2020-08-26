@@ -38,6 +38,7 @@ class RouteListingAdapter(var items: ArrayList<Route>, val context: Context):
             delete_button.setOnClickListener {
                 val database = RouteDB.get(context)
                 val routeId = items[adapterPosition].routeid
+                val name = items[adapterPosition].name
                 ids.remove(routeId)//removes id if there is in the list
                 Thread{
                     database.routeDao().deleteRouteWithId(routeId)

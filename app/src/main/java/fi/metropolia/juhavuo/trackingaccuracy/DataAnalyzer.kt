@@ -10,7 +10,7 @@ import kotlin.math.hypot
     This class is for using filtering algorithms and calculating the data values to be shown
     in MapFragment and GraphFragment.
  */
-class DataAnalyzer(val id: Int, val context: Context) {
+class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
 
     private var measuredLocations: ArrayList<MeasuredLocation> = ArrayList()
 
@@ -21,7 +21,7 @@ class DataAnalyzer(val id: Int, val context: Context) {
         Thread {
             val db = RouteDB.get(context)
             measuredLocations = db.measuredLocationDao()
-                .getLocationsOfRouteWithId(id) as ArrayList<MeasuredLocation>
+                .getLocationsOfRouteWithId(ids[0]) as ArrayList<MeasuredLocation>
             Log.i("test", "database operation complete, ${measuredLocations.size}")
         }.start()
     }
