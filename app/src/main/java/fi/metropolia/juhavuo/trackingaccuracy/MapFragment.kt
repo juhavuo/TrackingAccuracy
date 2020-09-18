@@ -35,7 +35,6 @@ class MapFragment : Fragment() {
     private var routeName: String? = null
     private var routeId: Int? = null
     private var mapFragmentJson: MapFragmentJson? = null
-    private lateinit var lengths_listing_view: TextView
     private var dataAnalyzer: DataAnalyzer? = null
     private var delegate: ShowMenuFragmentDelegate? = null
     private lateinit var mapPreferencesHandler: MapPreferencesHandler
@@ -78,7 +77,6 @@ class MapFragment : Fragment() {
             title.text = routeName!! //set the title to the fragment
         }
 
-        lengths_listing_view = view.findViewById(R.id.map_fragment_lengths_listing_textview)
         map = view.findViewById<MapView>(R.id.map_fragment_map)
         map?.setTileSource(TileSourceFactory.MAPNIK)
         map?.addMapListener(object : MapListener {
@@ -124,9 +122,8 @@ class MapFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         if (dataAnalyzer != null) {
-            averageAccuracy = dataAnalyzer!!.getAverageAccuracy()
-            Log.i("average","$averageAccuracy")
-            map_fragment_average_accuracies_textview.text = resources.getString(R.string.map_fragment_average_accuracies,averageAccuracy)
+            //averageAccuracy = dataAnalyzer!!.getAverageAccuracy()
+
             val geoPoints = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
             if (geoPoints.isNotEmpty()) {
                 map?.controller?.setZoom(mapPreferencesHandler.getMapZoomPreference())
@@ -252,17 +249,10 @@ class MapFragment : Fragment() {
                 mappedRouteJsons.add(MappedRouteJson(i,parameterData,points))
                 points.clear()
                 map?.overlayManager?.add(polylines[i])
-            }
+             }
         }
         map?.invalidate()
-        var lengthtext = ""
-        for((index,l) in lengthListings.withIndex()){
-            lengthtext += l
-            if(index<lengthListings.size-1){
-                lengthtext+=", "
-            }
-        }
-        lengths_listing_view.text=lengthtext
+
 
         if(routeId!=null && routeName!=null){
             mapFragmentJson = MapFragmentJson(routeId!!,routeName!!,mappedRouteJsons)

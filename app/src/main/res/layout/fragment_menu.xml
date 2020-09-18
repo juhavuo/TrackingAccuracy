@@ -29,6 +29,21 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_close_black_24dp" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/menu_fragment_select_route"
+            android:text="@string/menu_fragment_select_route"
+            app:layout_constraintTop_toBottomOf="@id/menu_fragment_title_textview"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/menu_fragment_select_route_spinner"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/menu_fragment_title_textview"/>
+
         <LinearLayout
             android:id="@+id/menu_fragment_measured_linear_layout"
             android:layout_width="wrap_content"
@@ -37,7 +52,7 @@
             android:layout_margin="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/menu_fragment_title_textview">
+            app:layout_constraintTop_toBottomOf="@id/menu_fragment_select_route">
 
             <CheckBox
                 android:id="@+id/menu_fragment_show_measured_checkbox"

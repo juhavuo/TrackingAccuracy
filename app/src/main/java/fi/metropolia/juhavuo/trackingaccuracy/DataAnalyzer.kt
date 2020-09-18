@@ -13,6 +13,7 @@ import kotlin.math.hypot
 class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
 
     private var measuredLocations: ArrayList<MeasuredLocation> = ArrayList()
+    private var routeJsonList: ArrayList<RouteJson> = ArrayList()
 
     /*
         Fetches location data of the specific data set using id of that set (route).
@@ -20,12 +21,35 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
     fun getMeasuredLocationsFromDatabase() {
         Thread {
             val db = RouteDB.get(context)
-            measuredLocations = db.measuredLocationDao()
-                .getLocationsOfRouteWithId(ids[0]) as ArrayList<MeasuredLocation>
-            Log.i("test", "database operation complete, ${measuredLocations.size}")
+
+            for(id in ids){
+                val route = db.routeDao().getRouteWithId(id)
+                val ml = db.measuredLocationDao().getLocationsOfRouteWithId(id) as ArrayList
+                routeJsonList.add(RouteJson(route,ml))
+            }
+            measuredLocations = routeJsonList[0].locations
         }.start()
     }
 
+
+    fun getAmountOfRoutes(): Int = routeJsonList.size
+
+    fun getRoutes(): ArrayList<Route>{
+        val routes: ArrayList<Route> = ArrayList()
+        for(rj in routeJsonList){
+            routes.add(rj.route)
+        }
+        return routes
+    }
+
+    private fun getLocations(index: Int): ArrayList<MeasuredLocation>{
+        var mls: ArrayList<MeasuredLocation> = ArrayList()
+        if(index > 0 && index < routeJsonList.size){
+            mls = routeJsonList[index].locations
+        }
+
+        return mls
+    }
 
     fun getAmountOfLocations(): Int = measuredLocations.size
 
@@ -43,6 +67,15 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
         val geoPoints: ArrayList<GeoPoint> = ArrayList()
         for (measuredLocation in measuredLocations) {
             geoPoints.add(GeoPoint(measuredLocation.latitude, measuredLocation.longitude))
+        }
+        return geoPoints
+    }
+
+    fun getMeasuredLocationsAsGeoPoints(index: Int): ArrayList<GeoPoint>{
+        val geoPoints: ArrayList<GeoPoint> = ArrayList()
+        val mls = getLocations(index)
+        for(ml in mls){
+            geoPoints.add(GeoPoint(ml.latitude,ml.longitude))
         }
         return geoPoints
     }
@@ -176,6 +209,16 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
 
     }
 
+    fun getAlgorithm1GeoPoint(index: Int, epsilon: Double): ArrayList<GeoPoint>{
+        val locations: ArrayList<MeasuredLocation> = ArrayList()
+        val ml = getLocations(index)
+        val success = ramerDouglasPeucker(ml,epsilon,locations)
+        if(!success){
+            locations.clear()
+        }
+        return getMeasuredLocationsAsGeoPoints(locations)
+    }
+
     fun getKalmanFilteredGeoPoints(): ArrayList<GeoPoint> {
         val kalmanGeoPoints: ArrayList<GeoPoint> = ArrayList()
         var speed = getSpeedMeanValue()
@@ -198,6 +241,38 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
                 , measuredLocations[index].longitude
                 , measuredLocations[index].accuracy
                 , measuredLocations[index].timestamp
+            )
+
+            kalmanGeoPoints.add(GeoPoint(kalmanFilter.lat, kalmanFilter.lng))
+        }
+
+        return kalmanGeoPoints
+
+    }
+
+    fun getKalmanFilteredGeoPoints(index: Int): ArrayList<GeoPoint> {
+        val kalmanGeoPoints: ArrayList<GeoPoint> = ArrayList()
+        val mls = getLocations(index)
+        var speed = getSpeedMeanValue()
+        speed *= 1.2f //this can be changed, for better values
+        if (speed < 3f) {
+            speed = 3f
+        }
+
+        val kalmanFilter = KalmanFilter(speed)
+
+        kalmanFilter.setState(
+            mls[0].latitude,
+            mls[0].longitude,
+            mls[0].accuracy,
+            mls[0].timestamp
+        )
+        for (i in 1 until mls.size) {
+            kalmanFilter.process(
+                mls[i].latitude
+                , mls[i].longitude
+                , mls[i].accuracy
+                , mls[i].timestamp
             )
 
             kalmanGeoPoints.add(GeoPoint(kalmanFilter.lat, kalmanFilter.lng))
@@ -273,6 +348,42 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
             val longitudeAverages = movingAverage(longitudes, a)
             for (index in 0 until latitudeAverages.size) {
                 geoPoints.add(GeoPoint(latitudeAverages[index], longitudeAverages[index]))
+            }
+        }
+        return geoPoints
+    }
+
+    fun getMovingAverages(index: Int, amount: Int, withWeights: Boolean): ArrayList<GeoPoint> {
+        var a = amount
+        if (a < 2) {
+            a = 2
+        } else if (a > 10) {
+            a = 10
+        }
+        val mls = getLocations(index)
+
+        val latitudes = mls.map { it.latitude }
+        val longitudes = mls.map { it.longitude }
+
+        val geoPoints: ArrayList<GeoPoint> = ArrayList()
+        if (withWeights) {
+            val weights = measuredLocations.map {
+                if (it.accuracy != 0f) {
+                    1 / it.accuracy
+                } else {
+                    1f //rare occation, in this case no accuracy is obtained, so standard weight is used
+                }
+            }
+            val latitudeAverages = movingAverageWithWeigths(latitudes,a,weights)
+            val longitudeAverages = movingAverageWithWeigths(longitudes,a,weights)
+            for(i in 0 until latitudeAverages.size){
+                geoPoints.add(GeoPoint(latitudeAverages[i],longitudeAverages[i]))
+            }
+        } else {
+            val latitudeAverages = movingAverage(latitudes, a)
+            val longitudeAverages = movingAverage(longitudes, a)
+            for (i in 0 until latitudeAverages.size) {
+                geoPoints.add(GeoPoint(latitudeAverages[i], longitudeAverages[i]))
             }
         }
         return geoPoints
@@ -423,6 +534,18 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
     fun getRemainingLocations(threshold_accuracy: Float): ArrayList<GeoPoint> {
         val geoPoints: ArrayList<GeoPoint> = ArrayList()
         for (mlocation in measuredLocations) {
+            if (mlocation.accuracy <= threshold_accuracy) {
+                geoPoints.add(GeoPoint(mlocation.latitude, mlocation.longitude))
+            }
+        }
+
+        return geoPoints
+    }
+
+    fun getRemainingLocations(index: Int, threshold_accuracy: Float): ArrayList<GeoPoint> {
+        val geoPoints: ArrayList<GeoPoint> = ArrayList()
+        val mls = getLocations(index)
+        for (mlocation in mls) {
             if (mlocation.accuracy <= threshold_accuracy) {
                 geoPoints.add(GeoPoint(mlocation.latitude, mlocation.longitude))
             }
