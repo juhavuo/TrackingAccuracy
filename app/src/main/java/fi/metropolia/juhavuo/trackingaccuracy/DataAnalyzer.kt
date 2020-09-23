@@ -209,7 +209,7 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
 
     }
 
-    fun getAlgorithm1GeoPoint(index: Int, epsilon: Double): ArrayList<GeoPoint>{
+    fun getAlgorithm1GeoPoints(index: Int, epsilon: Double): ArrayList<GeoPoint>{
         val locations: ArrayList<MeasuredLocation> = ArrayList()
         val ml = getLocations(index)
         val success = ramerDouglasPeucker(ml,epsilon,locations)

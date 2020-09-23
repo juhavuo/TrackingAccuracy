@@ -32,5 +32,9 @@ interface RouteDao{
     @Query("DELETE FROM route WHERE routeid =:id")
     fun deleteRouteWithId(id: Int)
 
+    @Query("UPDATE route SET epsilon =:epsilon WHERE routeid =:id")
+    fun updateEpsilonValue(epsilon: Double, id: Int)
 
+    @Query("UPDATE route SET accuracyThreshold =:accuracyThreshold WHERE routeid =:id")
+    fun updateAccuracyTreshold(accuracyThreshold: Int, id: Int)
 }

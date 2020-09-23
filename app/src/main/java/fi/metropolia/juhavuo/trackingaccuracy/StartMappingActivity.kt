@@ -38,7 +38,7 @@ class StartMappingActivity : AppCompatActivity() {
                     if(database.routeDao().getAmountOfRoutes()>0){
                         id = database.routeDao().getBiggestRouteId()+1
                     }
-                    val route = Route(id,route_name,starting_dialog_details_edittext.text.toString(),startingTime,-1L)
+                    val route = Route(id,route_name,starting_dialog_details_edittext.text.toString(),startingTime,-1L,null,null)
                     database.routeDao().insert(route)
                     intent.putExtra("route_id",id)
                     intent.putExtra("route_name",route_name)

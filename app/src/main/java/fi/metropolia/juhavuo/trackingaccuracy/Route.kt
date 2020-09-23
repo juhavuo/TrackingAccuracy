@@ -10,7 +10,10 @@ data class Route(
     var name: String,
     var description: String,
     val startingTime: Long,
-    var stoppingTime: Long
+    var stoppingTime: Long,
+    var epsilon: Double?,
+    var accuracyThreshold: Int?
+
 ){
 
     override fun toString(): String {

@@ -178,78 +178,90 @@ class MapFragment : Fragment() {
         val lengthListings: ArrayList<String> = ArrayList()
         val mappedRouteJsons: ArrayList<MappedRouteJson> = ArrayList()
         var points: ArrayList<GeoPoint> = ArrayList()
-        for (i in 0 until amoutOfPreferences) {
-            polylines[i] = Polyline()
 
-            if (mapPreferencesHandler.getAlgorithmPreference(i)) {
-                var parameterData: String? = null
-                when (i) {
-                    0 -> {
-                        polylines[0]?.outlinePaint?.color =
-                            resources.getColor(R.color.colorMeasuredPolyline, null)
-                        if (dataAnalyzer != null) {
-                            points = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
-                            polylines[0]?.setPoints(points)
-                            val length = dataAnalyzer!!.getLengthOfRoute(points)
-                            lengthListings.add("0: $length m")
-                        }
-                    }
-                    1 -> {
-                        polylines[1]?.outlinePaint?.color =
-                            resources.getColor(R.color.colorAlgorithm1Polyline, null)
-                        val epsilon = mapPreferencesHandler.getEpsilonPreference()
-                        if (dataAnalyzer != null) {
-                            points = dataAnalyzer!!.getAlgorithm1GeoPoints(epsilon)
-                            polylines[1]?.setPoints(points)
-                            val length = dataAnalyzer!!.getLengthOfRoute(points)
-                            lengthListings.add("1: $length m")
-                            parameterData = "{\"epsilon\":$epsilon}"
-                        }
-                    }
-                    2 -> {
-                        polylines[2]?.outlinePaint?.color =
-                            resources.getColor(R.color.colorAlgorithm2Polyline, null)
-                        if (dataAnalyzer != null) {
-                            points = dataAnalyzer!!.getKalmanFilteredGeoPoints()
-                            polylines[2]?.setPoints(points)
-                            val length = dataAnalyzer!!.getLengthOfRoute(points)
-                            lengthListings.add("2: $length m")
-                        }
-                    }
-                    3 -> {
-                        polylines[3]?.outlinePaint?.color =
-                            resources.getColor(R.color.colorAlgorithm3Polyline, null)
-                        val accuracyThSeekbarValue =
-                            mapPreferencesHandler.getAccuracyThresholdPreference()
-                        if (dataAnalyzer != null) {
-                            val accuracyThreshold = dataAnalyzer!!.calculateAccuracyFromBarReading(
-                                accuracyThSeekbarValue, 1000)
-                            points = dataAnalyzer!!.getRemainingLocations(accuracyThreshold)
-                            polylines[3]?.setPoints(points)
-                            val length = dataAnalyzer!!.getLengthOfRoute(points)
-                            lengthListings.add("3: $length m")
-                            parameterData = "{\"accuracy_threshold\":$accuracyThreshold}"
-                        }
-                    }
-                    4 -> {
-                        polylines[4]?.outlinePaint?.color =
-                            resources.getColor(R.color.colorAlgorithm4Polyline,null)
-                        val amountOfPoints = mapPreferencesHandler.getRunningMeanPreference()
-                        if(dataAnalyzer!=null){
-                            val isWeighted = mapPreferencesHandler.getUseWeightsPreference()
-                            points = dataAnalyzer!!.getMovingAverages(amountOfPoints,isWeighted)
-                            polylines[4]?.setPoints(points)
-                            val length = dataAnalyzer!!.getLengthOfRoute(points)
-                            lengthListings.add("4: $length m")
-                            parameterData =  "{\"is_weigthed\":$isWeighted, \"amount_of_points\":$amountOfPoints}"
+        var amountOfRoutes = 0
+        if(dataAnalyzer!=null){
+            amountOfRoutes = dataAnalyzer!!.getAmountOfRoutes()
+        }
+        for(j in 0 until amountOfRoutes) {
+            for (i in 0 until amoutOfPreferences) {
+                polylines[i] = Polyline()
 
+                if (mapPreferencesHandler.getAlgorithmPreference(i)) {
+                    var parameterData: String? = null
+                    when (i) {
+                        0 -> {
+                            polylines[0]?.outlinePaint?.color =
+                                resources.getColor(R.color.colorMeasuredPolyline, null)
+                            if (dataAnalyzer != null) {
+                                //points = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
+                                points = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints(j)
+                                polylines[0]?.setPoints(points)
+                                val length = dataAnalyzer!!.getLengthOfRoute(points)
+                                lengthListings.add("0: $length m")
+                            }
+                        }
+                        1 -> {
+                            polylines[1]?.outlinePaint?.color =
+                                resources.getColor(R.color.colorAlgorithm1Polyline, null)
+                            val epsilon = mapPreferencesHandler.getEpsilonPreference()
+                            if (dataAnalyzer != null) {
+                                points = dataAnalyzer!!.getAlgorithm1GeoPoints(j,epsilon)
+                                polylines[1]?.setPoints(points)
+                                val length = dataAnalyzer!!.getLengthOfRoute(points)
+                                lengthListings.add("1: $length m")
+                                parameterData = "{\"epsilon\":$epsilon}"
+                            }
+                        }
+                        2 -> {
+                            polylines[2]?.outlinePaint?.color =
+                                resources.getColor(R.color.colorAlgorithm2Polyline, null)
+                            if (dataAnalyzer != null) {
+                                points = dataAnalyzer!!.getKalmanFilteredGeoPoints(j)
+                                polylines[2]?.setPoints(points)
+                                val length = dataAnalyzer!!.getLengthOfRoute(points)
+                                lengthListings.add("2: $length m")
+                            }
+                        }
+                        3 -> {
+                            polylines[3]?.outlinePaint?.color =
+                                resources.getColor(R.color.colorAlgorithm3Polyline, null)
+                            val accuracyThSeekbarValue =
+                                mapPreferencesHandler.getAccuracyThresholdPreference()
+                            if (dataAnalyzer != null) {
+                                val accuracyThreshold =
+                                    dataAnalyzer!!.calculateAccuracyFromBarReading(
+                                        accuracyThSeekbarValue, 1000
+                                    )
+                                points = dataAnalyzer!!.getRemainingLocations(j,accuracyThreshold)
+                                polylines[3]?.setPoints(points)
+                                val length = dataAnalyzer!!.getLengthOfRoute(points)
+                                lengthListings.add("3: $length m")
+                                parameterData = "{\"accuracy_threshold\":$accuracyThreshold}"
+                            }
+                        }
+                        4 -> {
+                            polylines[4]?.outlinePaint?.color =
+                                resources.getColor(R.color.colorAlgorithm4Polyline, null)
+                            val amountOfPoints = mapPreferencesHandler.getRunningMeanPreference()
+                            if (dataAnalyzer != null) {
+                                val isWeighted = mapPreferencesHandler.getUseWeightsPreference()
+                                points =
+                                    dataAnalyzer!!.getMovingAverages(amountOfPoints, isWeighted)
+                                polylines[4]?.setPoints(points)
+                                val length = dataAnalyzer!!.getLengthOfRoute(points)
+                                lengthListings.add("4: $length m")
+                                parameterData =
+                                    "{\"is_weigthed\":$isWeighted, \"amount_of_points\":$amountOfPoints}"
+
+                            }
                         }
                     }
+                    mappedRouteJsons.add(MappedRouteJson(i, parameterData, points))
+                    points.clear()
+                    map?.overlayManager?.add(polylines[i])
                 }
-                mappedRouteJsons.add(MappedRouteJson(i,parameterData,points))
-                points.clear()
-                map?.overlayManager?.add(polylines[i])
-             }
+            }
         }
         map?.invalidate()
 
