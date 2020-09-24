@@ -2,6 +2,8 @@ package fi.metropolia.juhavuo.trackingaccuracy
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.DashPathEffect
+import android.graphics.PathEffect
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -78,6 +80,7 @@ class MapFragment : Fragment() {
         }
 
         map = view.findViewById<MapView>(R.id.map_fragment_map)
+        map?.setLayerType(View.LAYER_TYPE_SOFTWARE,null)
         map?.setTileSource(TileSourceFactory.MAPNIK)
         map?.addMapListener(object : MapListener {
             override fun onScroll(event: ScrollEvent?): Boolean {
@@ -257,6 +260,11 @@ class MapFragment : Fragment() {
                             }
                         }
                     }
+                    if(j>0){
+                        for(line in polylines) {
+                            line?.outlinePaint?.pathEffect = selectDrawStyle(j)
+                        }
+                    }
                     mappedRouteJsons.add(MappedRouteJson(i, parameterData, points))
                     points.clear()
                     map?.overlayManager?.add(polylines[i])
@@ -269,6 +277,18 @@ class MapFragment : Fragment() {
         if(routeId!=null && routeName!=null){
             mapFragmentJson = MapFragmentJson(routeId!!,routeName!!,mappedRouteJsons)
         }
+    }
+
+    private fun selectDrawStyle(index: Int): PathEffect{
+        var pathEffect: PathEffect
+        when(index){
+            1 -> pathEffect = DashPathEffect(floatArrayOf(40f, 10f), 0f)
+            2 -> pathEffect = DashPathEffect(floatArrayOf(10f,10f,20f,10f),0f)
+            3 -> pathEffect = DashPathEffect(floatArrayOf(20f,20f,5f,20f),0f)
+            4 -> pathEffect = DashPathEffect(floatArrayOf(4f,4f,8f,4f), 0f)
+            else -> pathEffect = DashPathEffect(floatArrayOf(4f,4f), 0f)
+        }
+        return pathEffect
     }
 
     /*
