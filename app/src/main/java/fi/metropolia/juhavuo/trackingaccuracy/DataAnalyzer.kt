@@ -27,6 +27,7 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
                 val ml = db.measuredLocationDao().getLocationsOfRouteWithId(id) as ArrayList
                 routeJsonList.add(RouteJson(route,ml))
             }
+            Log.i("cycling","routejsonlist size:${routeJsonList.size}")
             measuredLocations = routeJsonList[0].locations
         }.start()
     }
@@ -42,14 +43,8 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
         return routes
     }
 
-    private fun getLocations(index: Int): ArrayList<MeasuredLocation>{
-        var mls: ArrayList<MeasuredLocation> = ArrayList()
-        if(index > 0 && index < routeJsonList.size){
-            mls = routeJsonList[index].locations
-        }
+    private fun getLocations(index: Int): ArrayList<MeasuredLocation> = routeJsonList[index].locations
 
-        return mls
-    }
 
     fun getAmountOfLocations(): Int = measuredLocations.size
 
@@ -260,24 +255,21 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
         }
 
         val kalmanFilter = KalmanFilter(speed)
-
-        kalmanFilter.setState(
-            mls[0].latitude,
-            mls[0].longitude,
-            mls[0].accuracy,
-            mls[0].timestamp
-        )
-        for (i in 1 until mls.size) {
-            kalmanFilter.process(
-                mls[i].latitude
-                , mls[i].longitude
-                , mls[i].accuracy
-                , mls[i].timestamp
+        if(mls.size>0) {
+            kalmanFilter.setState(
+                mls[0].latitude,
+                mls[0].longitude,
+                mls[0].accuracy,
+                mls[0].timestamp
             )
+            for (i in 1 until mls.size) {
+                kalmanFilter.process(
+                    mls[i].latitude, mls[i].longitude, mls[i].accuracy, mls[i].timestamp
+                )
 
-            kalmanGeoPoints.add(GeoPoint(kalmanFilter.lat, kalmanFilter.lng))
+                kalmanGeoPoints.add(GeoPoint(kalmanFilter.lat, kalmanFilter.lng))
+            }
         }
-
         return kalmanGeoPoints
 
     }

@@ -186,7 +186,7 @@ class MapFragment : Fragment() {
         for(j in 0 until amountOfRoutes) {
             for (i in 0 until amoutOfPreferences) {
                 polylines[i] = Polyline()
-
+                Log.i("cycling","j: $j, i: $i")
                 if (mapPreferencesHandler.getAlgorithmPreference(i)) {
                     var parameterData: String? = null
                     when (i) {
