@@ -16,6 +16,9 @@ class MenuFragment: Fragment(){
     private var delegate: CloseMenuFragmentDelegate? = null
     private lateinit var mapPreferencesHandler: MapPreferencesHandler
     private var dataAnalyzer: DataAnalyzer? = null
+    private var routes: ArrayList<Route> = ArrayList()
+    private var routeNames: ArrayList<String> = ArrayList()
+    private var routes_index = 0
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -34,6 +37,24 @@ class MenuFragment: Fragment(){
     ): View? {
         //CheckBox to show accuracies in MapView
         val view = inflater.inflate(R.layout.fragment_menu,container,false)
+
+        routes = dataAnalyzer!!.getRoutes()
+        for(route in routes){
+            routeNames.add(route.name)
+        }
+
+        val spinner = view.findViewById<Spinner>(R.id.menu_fragment_select_route_spinner)
+        val arrayAdapter = ArrayAdapter(requireContext(),android.R.layout.simple_list_item_1,routeNames)
+        spinner.adapter = arrayAdapter
+        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, spinner_id: Long) {
+                routes_index = position
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
+
+        }
+
         val accuraciesCheckBox = view.findViewById<CheckBox>(R.id.menu_fragment_accuracies_checkBox)
         accuraciesCheckBox.isChecked = mapPreferencesHandler.getAccuracyPreference()
         accuraciesCheckBox.setOnCheckedChangeListener { _, isChecked ->
@@ -78,7 +99,7 @@ class MenuFragment: Fragment(){
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 val epsilon = progress/(epsilonMultiplier)
                 epsilonTextView.text = epsilon.toString()
-                mapPreferencesHandler.storeEpsilonPreference(epsilon)
+                //mapPreferencesHandler.storeEpsilonPreference(epsilon)
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {}
@@ -162,6 +183,8 @@ class MenuFragment: Fragment(){
     }
 
 }
+
+
 
 //for closing MenuFragment and return to MapFragment
 interface CloseMenuFragmentDelegate{

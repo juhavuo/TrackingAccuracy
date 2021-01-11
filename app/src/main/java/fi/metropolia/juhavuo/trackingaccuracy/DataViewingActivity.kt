@@ -78,6 +78,9 @@ class DataViewingActivity : AppCompatActivity(), ShowMenuFragmentDelegate, Close
     }
 
     override fun closeMenuFragment() {
+
+        dataAnalyzer.loadLocationData()
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container,mapFragment)
             .commit()

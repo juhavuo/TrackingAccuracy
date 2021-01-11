@@ -19,6 +19,11 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
         Fetches location data of the specific data set using id of that set (route).
      */
     fun getMeasuredLocationsFromDatabase() {
+       loadLocationData()
+    }
+
+    fun loadLocationData(){
+        routeJsonList.clear()
         Thread {
             val db = RouteDB.get(context)
 
@@ -31,7 +36,6 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
             measuredLocations = routeJsonList[0].locations
         }.start()
     }
-
 
     fun getAmountOfRoutes(): Int = routeJsonList.size
 
@@ -74,6 +78,8 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
         }
         return geoPoints
     }
+
+
 
     /*
         Get ArrayList of Geopoints from given ArrayList of MeasuredLocation-objects

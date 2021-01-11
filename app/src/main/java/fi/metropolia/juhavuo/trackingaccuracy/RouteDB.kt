@@ -19,8 +19,8 @@ abstract class RouteDB: RoomDatabase(){
 
             val MIGRATION_1_2 = object: Migration(1,2){
                 override fun migrate(database: SupportSQLiteDatabase) {
-                    database.execSQL("ALTER TABLE Route ADD COLUMN epsilon DOUBLE")
-                    database.execSQL("ALTER TABLE Route ADD COLUMN accuracyThreshold INT")
+                    //database.execSQL("ALTER TABLE Route ADD COLUMN epsilon DOUBLE")
+                    //database.execSQL("ALTER TABLE Route ADD COLUMN accuracyThreshold INT")
                 }
             }
 
