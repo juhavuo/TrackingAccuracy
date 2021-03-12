@@ -1,8 +1,7 @@
 # TrackingAccuracy
 This is for Bachelor's Thesis in Metropolia. Link to thesis: http://urn.fi/URN:NBN:fi:amk-2020102721693
 
-This is application for Android devices made by Kotlin. Currently the development is in pause, but I will return to this project
-during this spring 2021.
+This is application for Android devices made by Kotlin. 
 
 With this application one can track one's travelling route. There is live map, that shows the collected locations. 
 Locations can be also collected while the application is not active or even closed, because locations are collected from
@@ -14,3 +13,6 @@ of route is shown as graphs (distance-time, speed-time, altitude-distance). Nume
 
 There is still lot to adjust. This application is done for my phone and for example UI of Numerical Fragment needs to be
 make more adjustable for different screen sizes.
+
+Currently developing DataViewingActivity so data of multiple routes
+can be viewed and compared properly at the same time. This is in experimental branch.
