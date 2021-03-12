@@ -39,6 +39,14 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
 
     fun getAmountOfRoutes(): Int = routeJsonList.size
 
+    fun getNamesOfRoutes(): ArrayList<String>{
+        val routenames: ArrayList<String> = ArrayList()
+        for(routeJson in routeJsonList){
+            routenames.add(routeJson.route.name)
+        }
+        return routenames
+    }
+
     fun getRoutes(): ArrayList<Route>{
         val routes: ArrayList<Route> = ArrayList()
         for(rj in routeJsonList){

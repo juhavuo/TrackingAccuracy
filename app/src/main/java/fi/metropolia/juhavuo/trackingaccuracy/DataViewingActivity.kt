@@ -24,7 +24,6 @@ class DataViewingActivity : AppCompatActivity(), ShowMenuFragmentDelegate, Close
         dataAnalyzer.getMeasuredLocationsFromDatabase()
 
         mapFragment = MapFragment()
-        mapFragment.setRouteData(ids[0],routeName)
 
         menuFragment = MenuFragment()
         val graphFragment = GraphFragment()

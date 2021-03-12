@@ -34,13 +34,12 @@ import kotlin.math.sin
 class MapFragment : Fragment() {
 
     private var map: MapView? = null
-    private var routeName: String? = null
-    private var routeId: Int? = null
+    private var namesView: TextView? = null
+    private var routeNames: ArrayList<String> = ArrayList()
     private var mapFragmentJson: MapFragmentJson? = null
     private var dataAnalyzer: DataAnalyzer? = null
     private var delegate: ShowMenuFragmentDelegate? = null
     private lateinit var mapPreferencesHandler: MapPreferencesHandler
-    private var averageAccuracy = 0.0
     private var isZoomed = false
     private var zoomLevel = 15.0
 
@@ -74,11 +73,7 @@ class MapFragment : Fragment() {
         isZoomed = false
 
         val view = inflater.inflate(R.layout.fragment_map, container, false)
-        val title = view.findViewById<TextView>(R.id.map_fragment_title)
-        if(routeName!=null){
-            title.text = routeName!! //set the title to the fragment
-        }
-
+        namesView = view.findViewById(R.id.map_fragment_route_names_tv)
         map = view.findViewById<MapView>(R.id.map_fragment_map)
         map?.setLayerType(View.LAYER_TYPE_SOFTWARE,null)
         map?.setTileSource(TileSourceFactory.MAPNIK)
@@ -100,7 +95,9 @@ class MapFragment : Fragment() {
         menubutton.setOnClickListener {
             delegate?.showMenuFragment(this)
         }
+
         val shareButton = view.findViewById<ImageButton>(R.id.map_fragment_share_button)
+        /*
         shareButton.setOnClickListener {
             if(mapFragmentJson != null){
                 val jsonSender = JsonSender(requireContext())
@@ -108,7 +105,7 @@ class MapFragment : Fragment() {
                 jsonSender.convertToFile()
                 jsonSender.sendDataAsIntent()
             }
-        }
+        }*/
         return view
     }
 
@@ -117,16 +114,16 @@ class MapFragment : Fragment() {
         dataAnalyzer = da
     }
 
-    fun setRouteData(rId: Int, rName: String){
-        routeId = rId
-        routeName = rName
-    }
-
     override fun onStart() {
         super.onStart()
         if (dataAnalyzer != null) {
-            //averageAccuracy = dataAnalyzer!!.getAverageAccuracy()
-
+            routeNames = dataAnalyzer!!.getNamesOfRoutes()
+            var routesListed = ""
+            for((i,routeName) in routeNames.withIndex()){
+                routesListed+= "${i+1}: $routeName "
+            }
+            Log.i("routes_listed",routesListed)
+            namesView?.text = routesListed
             val geoPoints = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
             if (geoPoints.isNotEmpty()) {
                 map?.controller?.setZoom(mapPreferencesHandler.getMapZoomPreference())
@@ -178,7 +175,6 @@ class MapFragment : Fragment() {
     private fun drawPaths() {
         val amoutOfPreferences = mapPreferencesHandler.getAmoutOfAlgorithmPreferences()
         val polylines = arrayOfNulls<Polyline>(amoutOfPreferences)
-        val lengthListings: ArrayList<String> = ArrayList()
         val mappedRouteJsons: ArrayList<MappedRouteJson> = ArrayList()
         var points: ArrayList<GeoPoint> = ArrayList()
 
@@ -200,8 +196,6 @@ class MapFragment : Fragment() {
                                 //points = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
                                 points = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints(j)
                                 polylines[0]?.setPoints(points)
-                                val length = dataAnalyzer!!.getLengthOfRoute(points)
-                                lengthListings.add("0: $length m")
                             }
                         }
                         1 -> {
@@ -211,8 +205,6 @@ class MapFragment : Fragment() {
                             if (dataAnalyzer != null) {
                                 points = dataAnalyzer!!.getAlgorithm1GeoPoints(j,epsilon)
                                 polylines[1]?.setPoints(points)
-                                val length = dataAnalyzer!!.getLengthOfRoute(points)
-                                lengthListings.add("1: $length m")
                                 parameterData = "{\"epsilon\":$epsilon}"
                             }
                         }
@@ -222,8 +214,6 @@ class MapFragment : Fragment() {
                             if (dataAnalyzer != null) {
                                 points = dataAnalyzer!!.getKalmanFilteredGeoPoints(j)
                                 polylines[2]?.setPoints(points)
-                                val length = dataAnalyzer!!.getLengthOfRoute(points)
-                                lengthListings.add("2: $length m")
                             }
                         }
                         3 -> {
@@ -238,8 +228,6 @@ class MapFragment : Fragment() {
                                     )
                                 points = dataAnalyzer!!.getRemainingLocations(j,accuracyThreshold)
                                 polylines[3]?.setPoints(points)
-                                val length = dataAnalyzer!!.getLengthOfRoute(points)
-                                lengthListings.add("3: $length m")
                                 parameterData = "{\"accuracy_threshold\":$accuracyThreshold}"
                             }
                         }
@@ -252,8 +240,6 @@ class MapFragment : Fragment() {
                                 points =
                                     dataAnalyzer!!.getMovingAverages(amountOfPoints, isWeighted)
                                 polylines[4]?.setPoints(points)
-                                val length = dataAnalyzer!!.getLengthOfRoute(points)
-                                lengthListings.add("4: $length m")
                                 parameterData =
                                     "{\"is_weigthed\":$isWeighted, \"amount_of_points\":$amountOfPoints}"
 
@@ -273,10 +259,10 @@ class MapFragment : Fragment() {
         }
         map?.invalidate()
 
-
+        /*
         if(routeId!=null && routeName!=null){
             mapFragmentJson = MapFragmentJson(routeId!!,routeName!!,mappedRouteJsons)
-        }
+        }*/
     }
 
     private fun selectDrawStyle(index: Int): PathEffect{
