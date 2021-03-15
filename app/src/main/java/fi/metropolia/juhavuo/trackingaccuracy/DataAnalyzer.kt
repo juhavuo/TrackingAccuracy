@@ -33,19 +33,22 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
                 routeJsonList.add(RouteJson(route,ml))
             }
             Log.i("cycling","routejsonlist size:${routeJsonList.size}")
-            measuredLocations = routeJsonList[0].locations
+            measuredLocations = routeJsonList[0].locations //contemporary solution for features not to break
         }.start()
     }
 
     fun getAmountOfRoutes(): Int = routeJsonList.size
 
+    /*
     fun getNamesOfRoutes(): ArrayList<String>{
         val routenames: ArrayList<String> = ArrayList()
         for(routeJson in routeJsonList){
             routenames.add(routeJson.route.name)
         }
         return routenames
-    }
+    }*/
+
+    fun getRouteJsonList(): ArrayList<RouteJson> = routeJsonList
 
     fun getRoutes(): ArrayList<Route>{
         val routes: ArrayList<Route> = ArrayList()
@@ -67,17 +70,6 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
         return measuredLocations
     }
 
-    /*
-        To get the measured unfiltered locations as ArrayList of GeoPoint-objects.
-     */
-    fun getMeasuredLocationsAsGeoPoints(): ArrayList<GeoPoint> {
-        val geoPoints: ArrayList<GeoPoint> = ArrayList()
-        for (measuredLocation in measuredLocations) {
-            geoPoints.add(GeoPoint(measuredLocation.latitude, measuredLocation.longitude))
-        }
-        return geoPoints
-    }
-
     fun getMeasuredLocationsAsGeoPoints(index: Int): ArrayList<GeoPoint>{
         val geoPoints: ArrayList<GeoPoint> = ArrayList()
         val mls = getLocations(index)
@@ -87,7 +79,11 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
         return geoPoints
     }
 
-
+    fun getGeoPointsAsArray(): Array<ArrayList<GeoPoint>>{
+        return Array<ArrayList<GeoPoint>>(getAmountOfRoutes()){
+          getMeasuredLocationsAsGeoPoints(it)
+        }
+    }
 
     /*
         Get ArrayList of Geopoints from given ArrayList of MeasuredLocation-objects
@@ -101,11 +97,20 @@ class DataAnalyzer(val ids: ArrayList<Int>, val context: Context) {
     }
 
     /*
-        Get accuracies as ArrayList
+        Get accuracies as ArrayList, OLD VERSION...
      */
     fun getAccuracies(): ArrayList<Float> {
         val accuracies: ArrayList<Float> = ArrayList()
         for (location in measuredLocations) {
+            accuracies.add(location.accuracy)
+        }
+
+        return accuracies
+    }
+
+    fun getAccuracies(index: Int): ArrayList<Float> {
+        val accuracies: ArrayList<Float> = ArrayList()
+        for(location in routeJsonList[index].locations){
             accuracies.add(location.accuracy)
         }
 

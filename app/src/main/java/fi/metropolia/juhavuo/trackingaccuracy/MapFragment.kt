@@ -24,6 +24,7 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.Polyline
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -35,7 +36,6 @@ class MapFragment : Fragment() {
 
     private var map: MapView? = null
     private var namesView: TextView? = null
-    private var routeNames: ArrayList<String> = ArrayList()
     private var mapFragmentJson: MapFragmentJson? = null
     private var dataAnalyzer: DataAnalyzer? = null
     private var delegate: ShowMenuFragmentDelegate? = null
@@ -117,28 +117,65 @@ class MapFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         if (dataAnalyzer != null) {
-            routeNames = dataAnalyzer!!.getNamesOfRoutes()
-            var routesListed = ""
-            for((i,routeName) in routeNames.withIndex()){
-                routesListed+= "${i+1}: $routeName "
-            }
-            Log.i("routes_listed",routesListed)
-            namesView?.text = routesListed
-            val geoPoints = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
-            if (geoPoints.isNotEmpty()) {
-                map?.controller?.setZoom(mapPreferencesHandler.getMapZoomPreference())
-                map?.controller?.setCenter(geoPoints[0])
+
+            if (dataAnalyzer!!.getAmountOfRoutes()>0) {
+                val extremes = getExtremes()
+                setCenter(extremes)
+                setZoom(extremes)
 
                 if (mapPreferencesHandler.getAccuracyPreference()) {
-                    drawAccuraciesAsCircles(geoPoints,dataAnalyzer!!.getAccuracies())
+                    //drawAccuraciesAsCircles();
                 }
                 if (mapPreferencesHandler.getBearingsPreference()){
-                    drawBearings(geoPoints, dataAnalyzer!!.getBearings(),0.0003f)
+                    //drawBearings(geoPoints, dataAnalyzer!!.getBearings(),0.0003f)
                 }
                 drawPaths()
             }
             map?.invalidate()
         }
+    }
+
+    private fun setCenter(extremes: Array<Double>){
+       val centerpoint = GeoPoint((extremes[0]+extremes[1])/2,(extremes[2]+extremes[3])/2)
+        map?.controller?.setCenter(centerpoint)
+    }
+
+    private fun setZoom(extremes: Array<Double>){
+        //the if statement needs to change eventually so it is if spans are more than some threshold to be determined
+        if(extremes[0] != extremes[1] && extremes[2] != extremes[3]) {
+            val latitudeSpan = abs(extremes[1] - extremes[0])
+            val longitudeSpan = abs(extremes[3] - extremes[2])
+            map?.controller?.zoomToSpan(latitudeSpan,longitudeSpan)
+        }else{
+            map?.controller?.setZoom(17.0)
+        }
+    }
+
+    private fun getExtremes(): Array<Double>{
+
+        val locationArray = dataAnalyzer!!.getGeoPointsAsArray()
+
+        var latitudeMin = locationArray[0][0].latitude
+        var latitudeMax = locationArray[0][0].latitude
+        var longitudeMin = locationArray[0][0].longitude
+        var longitudeMax = locationArray[0][0].longitude
+
+        for(i in locationArray.indices){
+            for (j in locationArray[i].indices){
+                if(locationArray[i][j].latitude < latitudeMin){
+                    latitudeMin = locationArray[i][j].latitude
+                }else if(locationArray[i][j].latitude > latitudeMax){
+                    latitudeMax = locationArray[i][j].latitude
+                }
+
+                if(locationArray[i][j].longitude < longitudeMin){
+                    longitudeMin = locationArray[i][j].longitude
+                }else if(locationArray[i][j].longitude > longitudeMax){
+                    longitudeMax = locationArray[i][j].longitude
+                }
+            }
+        }
+        return arrayOf(latitudeMin, latitudeMax, longitudeMin, longitudeMax)
     }
 
     /*
@@ -168,6 +205,7 @@ class MapFragment : Fragment() {
         }
     }
 
+
     /*
         Draws the path according to both measured locations and calculated locations
         using algorithms
@@ -185,7 +223,6 @@ class MapFragment : Fragment() {
         for(j in 0 until amountOfRoutes) {
             for (i in 0 until amoutOfPreferences) {
                 polylines[i] = Polyline()
-                Log.i("cycling","j: $j, i: $i")
                 if (mapPreferencesHandler.getAlgorithmPreference(i)) {
                     var parameterData: String? = null
                     when (i) {
@@ -193,7 +230,6 @@ class MapFragment : Fragment() {
                             polylines[0]?.outlinePaint?.color =
                                 resources.getColor(R.color.colorMeasuredPolyline, null)
                             if (dataAnalyzer != null) {
-                                //points = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints()
                                 points = dataAnalyzer!!.getMeasuredLocationsAsGeoPoints(j)
                                 polylines[0]?.setPoints(points)
                             }
