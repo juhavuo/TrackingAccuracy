@@ -6,9 +6,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+    <fi.metropolia.juhavuo.trackingaccuracy.RouteLabelView
+        android:layout_width="@dimen/name_label_view_size"
+        android:layout_height="@dimen/name_label_view_size"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/names_listing_rv_row_image"/>
